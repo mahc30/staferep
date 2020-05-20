@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import Toolbar from "../layout/Toolbar.svelte";
 
   let headers = [{ title: "Head1" }, { title: "HEad2" }];
   let rows = [
@@ -7,14 +8,24 @@
     { name: "dt2", composer: "cdt2" }
   ];
 
-  onMount(async => {});
+  function updateTable(e) {
+    console.log(
+      "From Table: Params Changed! Updating!",
+      e.detail.selected,
+      e.detail.composer
+    );
+  }
 </script>
 
 <style>
-  /* your styles go here */
+
 </style>
 
-<table class="centered highlight">
+<!-- Toolbar -->
+<Toolbar on:changedParams={updateTable} />
+
+<!-- Probably the Table -->
+<table>
   <thead>
     <tr>
       {#each headers as head}
@@ -29,6 +40,5 @@
         <td>{row.composer}</td>
       </tr>
     {/each}
-    <td />
   </tbody>
 </table>

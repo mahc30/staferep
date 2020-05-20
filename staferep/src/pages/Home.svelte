@@ -1,20 +1,38 @@
 <script>
-  import {Link} from 'svelte-routing'
+  import { Link } from "svelte-routing";
 </script>
 
 <style>
-  .valign-wrapper {
-    height: 85vh;
+  .row{
+    margin-top: 5rem;
   }
+
+  .text-center{
+    text-align: center;
+  }
+
+.button{
+  color: #ed1c23 !important;
+  border: 0.1rem solid #ed1c23
+}
+
+.button:hover{
+  color: #b20000 !important
+}
 </style>
 
-<div class="container valign-wrapper">
+<div class="container">
   <div class="row">
-    <div class="col s3" />
-    <div class="col s6 center">
-      <img class="responsive-img" src="build/images/red-logo.png" alt="" />
-      <Link to="/table"><h5 class="btn red">Buscar Partituras</h5></Link>
+    <div class="column" />
+    <img class="column" src="images/red-logo.png" alt="" />
+    <div class="column" />
+  </div>
+
+  <div class="row">
+    <div class="column" />
+    <div class="column text-center">
+      <Link to="/table"><button class="button button-outline">Buscar Partituras</button></Link>
     </div>
-    <div class="col s3" />
+    <div class="column" />
   </div>
 </div>
