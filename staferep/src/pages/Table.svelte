@@ -11,13 +11,17 @@
   function updateTable(e) {
     console.log(
       "From Table: Params Changed! Updating!",
-      e.detail.selected,
-      e.detail.composer
+      e.detail.data,
+      e.detail.data.level,
+      e.detail.data.composer
     );
   }
 </script>
 
 <style>
+th, td{
+  text-align: center;
+}
 
 </style>
 
