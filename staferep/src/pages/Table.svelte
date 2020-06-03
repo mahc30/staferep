@@ -2,10 +2,10 @@
   import { onMount } from "svelte";
   import Toolbar from "../layout/Toolbar.svelte";
 
-  let headers = [{ title: "Head1" }, { title: "HEad2" }];
+  let headers = [{ title: "Obra" }, { title: "Compositor" }];
   let rows = [
-    { name: "dt1", composer: "cdt1" },
-    { name: "dt2", composer: "cdt2" }
+    { name: "Despacito", composer: "Mozart" },
+    { name: "Adagio en Re menor", composer: "Pitbull" }
   ];
 
   function updateTable(e) {
