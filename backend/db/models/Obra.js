@@ -13,6 +13,11 @@ const ObraSchema = new Schema({
     level: {
         type: String,
         required: [true, 'No level specified']
+    },
+    file_exists: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 

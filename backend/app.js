@@ -7,7 +7,7 @@ var timeout = require('connect-timeout');
 
 // Routes
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/obras');
+const obrasRouter = require('./routes/obras_routes');
 
 var app = express();
 
@@ -15,7 +15,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set("view engine", "jade");
 
-app.use(timeout('5000'));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,7 +27,7 @@ const db = require("./db/mongoose");
 
 // Routes
 app.use('/', indexRouter);
-app.use('/obras', usersRouter);
+app.use('/obras', obrasRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
