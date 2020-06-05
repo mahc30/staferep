@@ -39,6 +39,7 @@ exports.find_id = async function (req, res) {
     }
 };
 
+// TODO Handle Get by Filters
 /* Post Obra */
 exports.new_obra = async function (req, res) {
     //TODO handle possible pdf submit

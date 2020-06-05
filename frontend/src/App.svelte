@@ -1,15 +1,14 @@
 <script>
   // ======== CSS stuff ============
   import "../node_modules/milligram/dist/milligram.min.css";
-
-  // ========== Router stuff ========
-  import { Router, Route } from "svelte-routing";
-
+  
   // ========= Components =============
   import Navbar from "./layout/Navbar.svelte";
-  import Home from "./pages/Home.svelte";
-  import Login from "./pages/Login.svelte";
-  import Table from "./pages/Table.svelte";
+  import Home from "./components/Home.svelte";
+  import Login from "./components/Login.svelte";
+  import Table from "./components/Table.svelte";
+  // ========== Router stuff ========
+  import { Router, Route } from "svelte-routing";
 </script>
 
 <style>
