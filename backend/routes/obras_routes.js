@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const obra_controller = require('../controllers/obrasController');
+const obra_controller = require('../controllers/obras_Controller');
 
 /* GET obras listing. */
 router.get('/findall', obra_controller.find_all);

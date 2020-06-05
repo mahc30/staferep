@@ -3,13 +3,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-
-var timeout = require('connect-timeout');
 
 // Routes
 const indexRouter = require('./routes/index');
 const obrasRouter = require('./routes/obras_routes');
+const authRouter = require('./routes/auth_routes');
 
 var app = express();
 
@@ -20,10 +20,10 @@ app.set("view engine", "jade");
 app.use(logger('dev'));
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(bodyParser.urlencoded({extended: true}));
 
 // DB
 const db = require("./db/mongoose");
@@ -31,6 +31,7 @@ const db = require("./db/mongoose");
 // Routes
 app.use('/', indexRouter);
 app.use('/obras', obrasRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

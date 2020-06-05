@@ -1,8 +1,5 @@
 const logger = require('../util/logger');
 const Obra = require('../db/models/Obra');
-const db = require('../db/mongoose');
-
-var log;
 
 /* GET obras listing. */
 exports.find_all = async function (req, res) {
