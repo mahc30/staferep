@@ -1,8 +1,10 @@
 <script>
   import AutoComplete from "simple-svelte-autocomplete";
   import { createEventDispatcher } from "svelte";
-  const dispatch = createEventDispatcher();
+  import { onMount } from "svelte";
 
+  const dispatch = createEventDispatcher();
+  let filters = {};
   //Handle Select Level
   let levels = [
     { id: -1, text: `Cualquiera` },
@@ -13,32 +15,38 @@
   ];
   let level = levels[0];
   //Handle Composer Input
-  let composers = [
-    "Cualquiera",
-    "Iosef Stalin",
-    "Don Julio Jaramillo",
-    "Alejandro Gutierritos",
-    "Super G",
-    "Iosef Makarov",
-    "Iosef Makaronni",
-    "Don Papi"
-  ];
-  let composer = composers[0];
+  var composers = ["Cualquiera"];
+  var composer = composers[0]; //Initial Value, it should never be unassigned
 
   function handleSubmit() {
     //Parse Input
-    if (level.id != -1) levels[0].text = "";
-    if (composer === "" || !composer) composer = "Cualquiera";
+    let data = {};
+    let is_level = level.id != -1;
+    let is_composer = composer != "Cualquiera" || false;
 
-    let data = {
-      data: {
-        level: level.id,
-        composer: composer === "Cualquiera" ? "*" : composer //Im sorry if you have to read this, it's not that hard tho
-      }
-    };
-    //Send event to table parent
-    dispatch("changedParams", data);
+    if (is_level) data.level = level.text;
+    if (is_composer) data.composer = composer;
+    if (is_level || is_composer) dispatch("changedParams", data);
+    //If there is any data to send, do it
+    else dispatch("changedParams");
   }
+
+  onMount(async () => {
+    //TODO Get Initial of composers to show
+    const res = await fetch(`http://localhost:3000/obras/findall`, {
+      method: "GET",
+      headers: { "Content-type": "application/json" }
+    });
+
+    //Remember composers must be an Array of strings, cuz module requirements
+    let composer_list = await res.json();
+    let new_composers = [];
+
+    composer_list.forEach(element => {
+      new_composers = [...new_composers, element.composer];
+      composers = [composers[0], ...new Set(new_composers)]; //Apparently ...new SET returns a new array without duplicates :o
+    });
+  });
 </script>
 
 <style>
@@ -84,7 +92,7 @@
     </div>
 
     <div class="column">
-      <select bind:value={level} on:change|preventDefault={handleSubmit}>
+      <select bind:value={level}>
         {#each levels as level}
           <option value={level}>{level.text}</option>
         {/each}

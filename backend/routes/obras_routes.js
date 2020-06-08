@@ -12,6 +12,9 @@ router.get('/findid', obra_controller.find_id);
 /* Post Create new Obra */
 router.post('/add', obra_controller.new_obra);
 
+/* Post find obras by Filtes */
+router.post('/findFilter', obra_controller.find_all_filtered);
+
 /* Delete Obra by id */
 router.delete('/delete', obra_controller.delete_obra);
 

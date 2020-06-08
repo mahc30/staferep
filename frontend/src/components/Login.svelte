@@ -22,7 +22,6 @@
     });
 
     if (res.ok) {
-      console.log(res);
       dispatch("isAuth");
       localStorage.setItem("auth", "AUTH_LEVEL");
       navigate("/", { replace: true });
@@ -48,9 +47,6 @@
 
   strong {
     color: #000000;
-  }
-
-  .input-field {
   }
 </style>
 

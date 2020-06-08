@@ -1,6 +1,16 @@
 const logger = require('../util/logger');
 const Obra = require('../db/models/Obra');
 
+/*
+    INDEX:
+Get Obras List
+Get Obras by ID
+Post new Obra
+Delete Obra by ID
+
+
+*/
+
 /* GET obras listing. */
 exports.find_all = async function (req, res) {
 
@@ -65,9 +75,10 @@ exports.new_obra = async function (req, res) {
 
 /* DELETE obras by id. */
 exports.delete_obra = async function (req, res) {
+    console.log("Deleting", req.body);
     try {
         const obra = await Obra.findByIdAndDelete(req.body.obra_id);
-        logger.new_Log(req.method, req.baseUrl, true)
+        logger.new_Log(req.method, req.baseUrl, true);
         res.status(200).send(obra);
 
     } catch (err) {
@@ -97,3 +108,18 @@ exports.patch_obra = async function (req, res) {
         res.status(500).send(err);
     }
 };
+
+/* POST get by filters */
+exports.find_all_filtered = async function (req, res) {
+    let filters = req.body;
+    try {
+        const obra_list = await Obra.find(filters);
+        await logger.new_Log(req.method, req.baseUrl, true);
+        res.status(200).send(obra_list);
+    }
+    catch
+    {
+        await logger.new_Log(req.method, req.baseUrl, false);
+        res.status(500).send("F");
+    }
+}
