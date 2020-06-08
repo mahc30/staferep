@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import Toolbar from "../layout/Toolbar.svelte";
   import format from "../../util/format_data";
-  import delete_at_index from "../../util/util";
+  import util from "../../util/util";
   /* Example of what i need to do 
       let headers = [{ title: "Obra" }, { title: "Compositor" }];
   let rows = [
@@ -21,7 +21,7 @@
   */
   let headers = [];
   let rows = [];
-  let IS_AUTH = true; //TODO temporal IS_AUTH var for testing
+  let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
 
   //For initial state
   onMount(async () => {
@@ -30,15 +30,15 @@
   });
 
   function handle_Update_Table(list) {
-    headers = list.headers;
-    rows = list.rows;
+    headers = list.headers || headers;
+    rows = list.rows || rows;
   }
 
   function fetch_Obra_list(e) {
     // Fetch Data
     //Doing it this way because docs do it this way, don't really know if it's better, it's just a little bit hard to read
     const unnecesary_variable_name_but_basically_is_the_promise_for_svelte_to_load_fetch_data_READ_API = (async () => {
-      //I'm sorry for what you're about to see
+      //I'm sorry for what you're about to see //TODO MAKE A FCKING FETCH FUNCTION AAAA
       let url = "http://localhost:3000/obras/findall";
       let options = {
         method: "GET",
@@ -88,9 +88,12 @@
         },
         body: JSON.stringify({ obra_id: e.target.id })
       });
-      rows = delete_at_index(rows, e.target.id);
+
+      let new_rows = util.delete_at_index(rows, e.target.id);
+      console.log(new_rows);
+      handle_Update_Table({ rows: new_rows });
     } catch (error) {
-      console.log("Error Eliminando Obra");
+      console.log("Error Eliminando Obra", error);
     }
   }
 </script>
@@ -99,6 +102,23 @@
   th,
   td {
     text-align: center;
+    color: black;
+  }
+
+  hr {
+    border-top: 0.1rem solid #2c2c2c !important; /* hr tag is white for default, have to override it */
+  }
+
+  .highlight {
+    background-color: #999999;
+  }
+
+  .table_body_row:hover {
+    background-color: #bfbfbf;
+  }
+
+  .highlight.table_body_row:hover {
+    background-color: #7e7e7e;
   }
 
   button {
@@ -125,6 +145,7 @@
 
 <!-- Toolbar -->
 <Toolbar on:changedParams={fetch_Obra_list} />
+<hr />
 
 <!-- Probably the Table -->
 <table>
@@ -146,12 +167,14 @@
     {#await handle_Update_Table}
       <p>Loading</p>
     {:then raw_data}
-      {#each rows as row}
-        <tr>
+      {#each rows as row, i}
+        <tr class:highlight={i % 2 === 0} class="table_body_row">
           <td>{row.name}</td>
           <td>{row.composer}</td>
 
-          <!-- buttons for CRUD  -->
+          <!-- buttons for CRUD  
+            For Admins and Normal Users
+          -->
           {#if IS_AUTH}
             <td>
               <button id={row.id} on:click={handle_Edit_Element}>Editar</button>
@@ -169,9 +192,31 @@
                 Eliminar
               </button>
             </td>
+          {:else}
+            <td>
+              <button
+                id={row.id}
+                on:click={handle_Download_Element}
+                disabled={row.file_exists}>
+                Descargar
+              </button>
+            </td>
           {/if}
         </tr>
       {/each}
+
+      {#if IS_AUTH}
+        <tr>
+          <!--- Aditional TD are for centering the Button, easier than css i guess -->
+          <td />
+          <td />
+          <td>
+            <button on:click={handle_Add_Element}>Agregar</button>
+          </td>
+          <td />
+          <td />
+        </tr>
+      {/if}
     {:catch error}
       <tr>
         <p>Error Cargando Registro</p>

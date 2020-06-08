@@ -17,7 +17,9 @@
 }
 
 .button:hover{
-  color: #b20000 !important
+  color: #b20000 !important;
+  border: 0.1rem solid #b20000 !important;
+
 }
 </style>
 

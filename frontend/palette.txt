@@ -2,3 +2,9 @@ Reds
 Standard: #ED1D23
 Light: #ff5f4e
 Dark: #b20000
+
+Greys:
+Standard: #7e7e7e
+Extra-Light: #BFBFBF
+Light: #999999
+Dark: #444444

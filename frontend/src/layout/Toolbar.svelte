@@ -7,7 +7,7 @@
   let filters = {};
   //Handle Select Level
   let levels = [
-    { id: -1, text: `Cualquiera` },
+    { id: -1, text: `Nivel` },
     { id: 0, text: `Presemillero` },
     { id: 1, text: `Semillero` },
     { id: 2, text: `Preorquesta` },
@@ -15,14 +15,14 @@
   ];
   let level = levels[0];
   //Handle Composer Input
-  var composers = ["Cualquiera"];
+  var composers = ["Compositor"];
   var composer = composers[0]; //Initial Value, it should never be unassigned
 
   function handleSubmit() {
     //Parse Input
     let data = {};
     let is_level = level.id != -1;
-    let is_composer = composer != "Cualquiera" || false;
+    let is_composer = composer != "Compositor" || false;
 
     if (is_level) data.level = level.text;
     if (is_composer) data.composer = composer;
@@ -54,10 +54,6 @@
     margin: 1px 1px 2px 3px;
     text-align: center;
     display: inline;
-  }
-
-  hr {
-    border-top: 0.1rem solid #2c2c2c !important;
   }
 
   u,
@@ -113,6 +109,4 @@
       </button>
     </div>
   </div>
-
-  <hr />
 </div>

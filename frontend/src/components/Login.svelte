@@ -23,7 +23,8 @@
 
     if (res.ok) {
       dispatch("isAuth");
-      localStorage.setItem("auth", "AUTH_LEVEL");
+      let auth_info = await res.json();
+      localStorage.setItem("auth", auth_info.level);
       navigate("/", { replace: true });
     }
   }
