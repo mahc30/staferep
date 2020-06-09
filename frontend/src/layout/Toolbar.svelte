@@ -51,13 +51,11 @@
 
 <style>
   .column {
-    margin: 1px 1px 2px 3px;
     text-align: center;
     display: inline;
   }
 
-  u,
-  img {
+  img { /* Search Button Image */
     /* So it´s centered */
     position: relative;
     top: 8px;
@@ -66,6 +64,7 @@
   button {
     background-color: #ff5f4e !important;
   }
+  
   button:hover {
     background-color: #b20000 !important;
   }

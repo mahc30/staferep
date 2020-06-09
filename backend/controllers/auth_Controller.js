@@ -30,8 +30,12 @@ exports.login = async function (req, res) {
     try {
         const result = await Auth.findOne({ password: encrypted_pw });
         logger.new_Log(req.method, req.baseUrl, true);
+        let auth_info = {
+            level: "1",
+            token: ""
+        }
 
-        if (result) res.sendStatus(202)
+        if (result) res.status(202).send(auth_info);
         else res.sendStatus(401);
     }
     catch

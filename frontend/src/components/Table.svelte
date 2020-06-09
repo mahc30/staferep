@@ -1,6 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import Toolbar from "../layout/Toolbar.svelte";
+  import EditRow from "../layout/EditRow.svelte";
+  import ObraRow from "../layout/ObraRow.svelte";
   import format from "../../util/format_data";
   import util from "../../util/util";
   /* Example of what i need to do 
@@ -25,7 +27,11 @@
 
   //For initial state
   onMount(async () => {
-    console.log("onmount");
+    
+    //Set auth level
+    IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates  
+
+    // Load initial table
     await fetch_Obra_list({}); //Function receives an event, passing an empty object does the trick
   });
 
@@ -68,28 +74,38 @@
 
   //TODO
   function handle_Add_Element(e) {
-    console.log("Adding", e.target.id);
+    let id;
+    if (e.detail) id = e.detail.id;
+      else return;
   }
 
+  let is_editing = -1;
   function handle_Edit_Element(e) {
-    console.log("Editing", e.target.id);
+    e.detail? is_editing = e.detail.id : is_editing = -1;
   }
 
   function handle_Download_Element(e) {
-    console.log("Downloading", e.target.id);
+    console.log("Downloading", e.detail.id);
+    let id;
+    if (e.detail) id = e.detail.id;
+      else return;
   }
 
   async function handle_Delete_Element(e) {
+    let id;
+    if (e.detail) id = e.detail.id;
+      else return;
+
     try {
       await fetch("http://localhost:3000/obras/delete", {
         method: "DELETE",
         headers: {
           "Content-type": "application/json"
         },
-        body: JSON.stringify({ obra_id: e.target.id })
+        body: JSON.stringify({ obra_id: id })
       });
 
-      let new_rows = util.delete_at_index(rows, e.target.id);
+      let new_rows = util.delete_at_index(rows, id);
       console.log(new_rows);
       handle_Update_Table({ rows: new_rows });
     } catch (error) {
@@ -99,28 +115,12 @@
 </script>
 
 <style>
-  th,
-  td {
-    text-align: center;
-    color: black;
-  }
-
+ 
   hr {
     border-top: 0.1rem solid #2c2c2c !important; /* hr tag is white for default, have to override it */
   }
 
-  .highlight {
-    background-color: #999999;
-  }
-
-  .table_body_row:hover {
-    background-color: #bfbfbf;
-  }
-
-  .highlight.table_body_row:hover {
-    background-color: #7e7e7e;
-  }
-
+  
   button {
     background-color: #ed1c23;
     border: 0.1rem solid #ed1c23;
@@ -163,46 +163,25 @@
 
     </tr>
   </thead>
+
   <tbody>
     {#await handle_Update_Table}
       <p>Loading</p>
-    {:then raw_data}
-      {#each rows as row, i}
-        <tr class:highlight={i % 2 === 0} class="table_body_row">
-          <td>{row.name}</td>
-          <td>{row.composer}</td>
+    {:then useless_var_i_dont_really_use_because_i_handle_everything_in_script}
 
-          <!-- buttons for CRUD  
-            For Admins and Normal Users
-          -->
-          {#if IS_AUTH}
-            <td>
-              <button id={row.id} on:click={handle_Edit_Element}>Editar</button>
-            </td>
-            <td>
-              <button
-                id={row.id}
-                on:click={handle_Download_Element}
-                disabled={row.file_exists}>
-                Descargar
-              </button>
-            </td>
-            <td>
-              <button id={row.id} on:click={handle_Delete_Element}>
-                Eliminar
-              </button>
-            </td>
-          {:else}
-            <td>
-              <button
-                id={row.id}
-                on:click={handle_Download_Element}
-                disabled={row.file_exists}>
-                Descargar
-              </button>
-            </td>
-          {/if}
-        </tr>
+      {#each rows as row, i}
+        {#if row.id === is_editing}
+          <EditRow obra={row} on:rowEdited={handle_Edit_Element}/>
+        {:else}
+          <ObraRow
+          obra={row} 
+          IS_AUTH={IS_AUTH} 
+          i={i}
+          on:editObra={handle_Edit_Element}
+          on:downloadObra={handle_Download_Element}
+          on:deleteObra ={handle_Delete_Element}
+          />
+        {/if}
       {/each}
 
       {#if IS_AUTH}
@@ -217,6 +196,7 @@
           <td />
         </tr>
       {/if}
+
     {:catch error}
       <tr>
         <p>Error Cargando Registro</p>
