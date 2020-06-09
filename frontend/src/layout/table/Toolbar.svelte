@@ -62,6 +62,11 @@
     top: 8px;
   }
 
+  hr {
+    border-top: 0.1rem solid black !important; /* hr tag is white for default, have to override it */
+    margin: 0 0 4px 0 !important;
+  }
+  
   button {
     background-color: #ed1c23 !important;
     border: #ed1c23;
@@ -112,3 +117,4 @@
     </div>
   </div>
 </div>
+<hr />

@@ -1,8 +1,9 @@
 <script>
   import { onMount } from "svelte";
-  import Toolbar from "../layout/Toolbar.svelte";
-  import EditRow from "../layout/EditRow.svelte";
-  import ObraRow from "../layout/ObraRow.svelte";
+  import Toolbar from "../layout/table/Toolbar.svelte";
+  import EditRow from "../layout/table/EditRow.svelte";
+  import ObraRow from "../layout/table/ObraRow.svelte";
+  import AddRow from "../layout/table/AddRow.svelte";
   import format from "../../util/format_data";
   import util from "../../util/util";
   /* Example of what i need to do 
@@ -72,10 +73,25 @@
   }
 
   //TODO
-  function handle_Add_Element(e) {
+  async function handle_Add_Element(e) {
     let id;
     if (e.detail) id = e.detail.id;
-    else return;
+
+    let new_obra = e.detail;
+
+    try {
+      let edit = await fetch("http://localhost:3000/obras/add", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(new_obra)
+      });
+
+      fetch_Obra_list({});
+    } catch (error) {
+      console.log("Error Eliminando Obra", error);
+    }
   }
 
   let is_editing = -1;
@@ -99,13 +115,13 @@
         body: JSON.stringify(new_obra)
       });
 
-      if(edit.ok){
+      if (edit.ok) {
         let edited = await edit.json();
-        let index = rows.findIndex(obra => {return obra.id === edited._id});
+        let index = rows.findIndex(obra => {
+          return obra.id === edited._id;
+        });
         fetch_Obra_list({});
       }
-      
-
     } catch (error) {
       console.log("Error Eliminando Obra", error);
     }
@@ -150,40 +166,14 @@
     width: 100%;
   }
 
-  td,
   th {
     text-align: center;
-  }
-
-  hr {
-    border-top: 0.1rem solid #2c2c2c !important; /* hr tag is white for default, have to override it */
-  }
-
-  button {
-    background-color: #ed1c23;
-    border: 0.1rem solid #ed1c23;
-  }
-
-  button:hover {
-    background-color: #b20000;
-  }
-
-  button:disabled {
-    background-color: gray;
-    border: 0.1rem solid gray !important;
-    color: white;
-  }
-
-  button:disabled:hover {
-    background-color: gray;
-    border: 0.1rem solid gray !important;
-    color: white;
+    color: #999999;
   }
 </style>
 
 <!-- Toolbar -->
 <Toolbar on:changedParams={fetch_Obra_list} />
-<hr />
 
 <!-- Probably the Table -->
 <table>
@@ -223,16 +213,7 @@
       {/each}
 
       {#if IS_AUTH}
-        <tr>
-          <!--- Aditional TD are for centering the Button, easier than css i guess -->
-          <td />
-          <td />
-          <td>
-            <button on:click={handle_Add_Element}>Agregar</button>
-          </td>
-          <td />
-          <td />
-        </tr>
+        <AddRow on:obraAdded={handle_Add_Element} />
       {/if}
 
     {:catch error}

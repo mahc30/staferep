@@ -16,8 +16,9 @@
   let new_file;
   
   let level = levels.find(level => level.text === obra.level)
+//TODO validations that all fields have been modified
 
-  function save(e) {
+  function edit(e) {
     let new_obra = {obra_id: obra.id, level:level.text, edit: true};
 
     //That variable naming kys
@@ -83,6 +84,6 @@
     <button>Subir Archivo</button>
   </td>
   <td>
-    <button on:click={save}>Guardar Cambios</button>
+    <button on:click={edit}>Guardar Cambios</button>
   </td>
 </tr>

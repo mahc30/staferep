@@ -1,5 +1,5 @@
 function format_obras_data(req){
-    let headers = [{title: "Obra"}, {title: "Compositor"}]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
+    let headers = [{title: "Obra"}, {title: "Compositor"}, {title:""}, {title:""}, {title:""}]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
     let rows = [];
     let data = {};
 
