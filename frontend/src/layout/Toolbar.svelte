@@ -55,18 +55,21 @@
     display: inline;
   }
 
-  img { /* Search Button Image */
+  img {
+    /* Search Button Image */
     /* So it´s centered */
     position: relative;
     top: 8px;
   }
 
   button {
-    background-color: #ff5f4e !important;
+    background-color: #ed1c23 !important;
+    border: #ed1c23;
   }
-  
+
   button:hover {
     background-color: #b20000 !important;
+    border: #b20000;
   }
 
   .noselect {

@@ -27,9 +27,8 @@
 
   //For initial state
   onMount(async () => {
-    
     //Set auth level
-    IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates  
+    IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates
 
     // Load initial table
     await fetch_Obra_list({}); //Function receives an event, passing an empty object does the trick
@@ -76,25 +75,55 @@
   function handle_Add_Element(e) {
     let id;
     if (e.detail) id = e.detail.id;
-      else return;
+    else return;
   }
 
   let is_editing = -1;
-  function handle_Edit_Element(e) {
-    e.detail? is_editing = e.detail.id : is_editing = -1;
+  async function handle_Edit_Element(e) {
+    let id = e.detail.id;
+    if (!e.detail.edit) {
+      //First Click, the "I'm going to edit"
+      is_editing = e.detail.id;
+      return;
+    }
+
+    let new_obra = e.detail;
+    delete new_obra.edit; //I don't need it
+
+    try {
+      let edit = await fetch("http://localhost:3000/obras/update", {
+        method: "PATCH",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(new_obra)
+      });
+
+      if(edit.ok){
+        let edited = await edit.json();
+        let index = rows.findIndex(obra => {return obra.id === edited._id});
+        fetch_Obra_list({});
+      }
+      
+
+    } catch (error) {
+      console.log("Error Eliminando Obra", error);
+    }
+
+    is_editing = -1;
   }
 
   function handle_Download_Element(e) {
     console.log("Downloading", e.detail.id);
     let id;
     if (e.detail) id = e.detail.id;
-      else return;
+    else return;
   }
 
   async function handle_Delete_Element(e) {
     let id;
     if (e.detail) id = e.detail.id;
-      else return;
+    else return;
 
     try {
       await fetch("http://localhost:3000/obras/delete", {
@@ -115,12 +144,21 @@
 </script>
 
 <style>
- 
+  /* TODO Apparently this doesn't work in mobile, gotta fix the css */
+  table,
+  tr {
+    width: 100%;
+  }
+
+  td,
+  th {
+    text-align: center;
+  }
+
   hr {
     border-top: 0.1rem solid #2c2c2c !important; /* hr tag is white for default, have to override it */
   }
 
-  
   button {
     background-color: #ed1c23;
     border: 0.1rem solid #ed1c23;
@@ -151,6 +189,7 @@
 <table>
   <thead>
     <tr>
+
       {#await handle_Update_Table}
         <p>Loading</p>
       {:then raw_data}
@@ -171,16 +210,15 @@
 
       {#each rows as row, i}
         {#if row.id === is_editing}
-          <EditRow obra={row} on:rowEdited={handle_Edit_Element}/>
+          <EditRow obra={row} on:rowEdited={handle_Edit_Element} />
         {:else}
           <ObraRow
-          obra={row} 
-          IS_AUTH={IS_AUTH} 
-          i={i}
-          on:editObra={handle_Edit_Element}
-          on:downloadObra={handle_Download_Element}
-          on:deleteObra ={handle_Delete_Element}
-          />
+            obra={row}
+            {IS_AUTH}
+            {i}
+            on:editObra={handle_Edit_Element}
+            on:downloadObra={handle_Download_Element}
+            on:deleteObra={handle_Delete_Element} />
         {/if}
       {/each}
 
@@ -201,6 +239,7 @@
       <tr>
         <p>Error Cargando Registro</p>
       </tr>
+
     {/await}
 
   </tbody>

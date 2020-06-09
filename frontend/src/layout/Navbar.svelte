@@ -19,11 +19,10 @@
     list-style: none;
     margin: 0 20px;
   }
-  .icon{
+  .icon {
     max-width: 48px;
     max-height: 48px;
   }
-
 </style>
 
 <nav class="navigation" on:click={toggleAuth}>
@@ -32,7 +31,7 @@
 
     <li class="navigation_item">
       <Link to="/" href="badges.html">
-        <img class="icon" src="images/red-logo-icon.png" alt="">
+        <img class="icon" src="images/red-logo-icon.png" alt="" />
       </Link>
     </li>
   </ul>

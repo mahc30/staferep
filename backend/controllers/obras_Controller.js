@@ -90,17 +90,15 @@ exports.delete_obra = async function (req, res) {
 
 /* PATCH obra by id */
 exports.patch_obra = async function (req, res) {
-    console.log(req.body);
+    let id = req.body.obra_id;
+    delete req.body.obra_id;
+    console.log("REQ . BODY", req.body);
     try {
-        await Obra.update({ _id: req.body.obra_id },
-            {
-                name: req.body.obra_name,
-                composer: req.body.obra_composer,
-                level: req.body.obra_level
-            })
+        let new_obra = await Obra.findOneAndUpdate({ _id: id }, req.body);
 
+        console.log("FUCK THE POLICE: ", new_obra);
         logger.new_Log(req.method, req.baseUrl, true)
-        res.sendStatus(200);
+        res.status(200).send(new_obra);
 
     } catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);
