@@ -78,7 +78,6 @@
     if (e.detail) id = e.detail.id;
 
     let new_obra = e.detail;
-
     try {
       let edit = await fetch("http://localhost:3000/obras/add", {
         method: "POST",
@@ -181,7 +180,9 @@
     <tr>
 
       {#await handle_Update_Table}
-        <p>Loading</p>
+        <th>
+          <h6>Cargando...</h6>
+        </th>
       {:then raw_data}
         {#each headers as head}
           <th>{head.title}</th>
@@ -195,7 +196,9 @@
 
   <tbody>
     {#await handle_Update_Table}
-      <p>Loading</p>
+      <tr>
+        <h6>Cargando...</h6>
+      </tr>
     {:then useless_var_i_dont_really_use_because_i_handle_everything_in_script}
 
       {#each rows as row, i}

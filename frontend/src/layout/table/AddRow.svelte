@@ -4,8 +4,6 @@
   //Maybe, maybe i'll come back one day and fix this, or not
 
   import { createEventDispatcher } from "svelte";
-
-  export let isAdding;
   let dispatch = createEventDispatcher();
   let levels = [
     { id: -1, text: `Nivel` },
@@ -15,26 +13,35 @@
     { id: 3, text: `Orquesta` }
   ];
 
+  let isAdding;
   let new_name;
   let new_composer;
-  let new_file;
+  let newFile;
+  let isLoading = false;
   let level = levels[0];
 
   function toggle_add() {
     isAdding = !isAdding;
   }
 
-
-//TODO validations that all fields have been modified
+  function toggle_load() {
+    isLoading = !isLoading;
+  }
+  //TODO validations that all fields have been modified
   function save(e) {
+    toggle_add();
     let new_obra = {
       obra_name: new_name,
       obra_composer: new_composer,
       obra_level: level.text,
-      file_exists: new_file || false
+      file_exists: newFile || false
     };
     isAdding = false;
     dispatch("obraAdded", new_obra);
+  }
+
+  function upload(event) {
+    toggle_load();
   }
 </script>
 
@@ -67,6 +74,19 @@
     color: white;
   }
 
+  .input-button{
+    position: relative;
+  }
+
+  label {
+    max-width: 100%;
+    overflow: hidden;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
   .pl-4 {
     padding-left: 4%;
   }
@@ -90,7 +110,16 @@
       </div>
     </td>
     <td>
-      <button>Subir Archivo</button>
+      {#if !isLoading}
+        <button class="input-button">
+          Subir Archivos
+          <label on:click={upload} >
+            <input type="file" bind:value={newFile} />
+          </label>
+        </button>
+      {:else}
+        <p on:click={toggle_load}>subiendo...</p>
+      {/if}
     </td>
     <td>
       <button on:click={save}>Agregar</button>
@@ -102,7 +131,7 @@
     <td />
     <td />
     <td>
-      <button on:click={toggle_add}>Agregar</button>
+      <button on:click={toggle_add} >Agregar</button>
     </td>
     <td />
     <td />
