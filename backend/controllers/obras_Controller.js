@@ -50,14 +50,15 @@ exports.find_id = async function (req, res) {
 /* Post Obra */
 exports.new_obra = async function (req, res) {
     //TODO handle possible pdf submit
-    let file_exists = req.body.file_exists;
+    let file_exists = false //req.body.file_exists;
+    console.log(req.body);
 
     let newObra = new Obra(
         {
             name: req.body.obra_name,
             composer: req.body.obra_composer,
             level: req.body.obra_level,
-            file_exists: file_exists || false
+            //file_exists: file_exists || false
         });
 
     try {

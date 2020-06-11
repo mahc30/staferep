@@ -4,6 +4,8 @@
   //Maybe, maybe i'll come back one day and fix this, or not
 
   import { createEventDispatcher } from "svelte";
+  import { onMount } from "svelte";
+
   let dispatch = createEventDispatcher();
   let levels = [
     { id: -1, text: `Nivel` },
@@ -13,12 +15,22 @@
     { id: 3, text: `Orquesta` }
   ];
 
-  let isAdding;
-  let new_name;
-  let new_composer;
-  let newFile;
+  let isAdding = true;
+  let new_name = "";
+  let new_composer = "";
+  let newFile = [];
   let isLoading = false;
   let level = levels[0];
+
+  function reset_component() {
+    isAdding = false;
+    new_name;
+    new_composer;
+    newFile = [];
+    isLoading = false;
+    level = levels[0];
+    toggle_add();
+  }
 
   function toggle_add() {
     isAdding = !isAdding;
@@ -27,21 +39,23 @@
   function toggle_load() {
     isLoading = !isLoading;
   }
+
   //TODO validations that all fields have been modified
   function save(e) {
-    toggle_add();
     let new_obra = {
       obra_name: new_name,
       obra_composer: new_composer,
       obra_level: level.text,
       file_exists: newFile || false
     };
-    isAdding = false;
+
+    reset_component();
     dispatch("obraAdded", new_obra);
   }
 
-  function upload(event) {
+  function upload(e) {
     toggle_load();
+    newFile = e.target.files;
   }
 </script>
 
@@ -74,7 +88,8 @@
     color: white;
   }
 
-  .input-button{
+  /*
+  .input-button {
     position: relative;
   }
 
@@ -86,6 +101,7 @@
     left: 0;
     top: 0;
   }
+*/
 
   .pl-4 {
     padding-left: 4%;
@@ -111,14 +127,9 @@
     </td>
     <td>
       {#if !isLoading}
-        <button class="input-button">
-          Subir Archivos
-          <label on:click={upload} >
-            <input type="file" bind:value={newFile} />
-          </label>
-        </button>
+        <p on:click={toggle_load}>To Be Implemented</p>
       {:else}
-        <p on:click={toggle_load}>subiendo...</p>
+        <p on:click={toggle_load}>To Be Implemented</p>
       {/if}
     </td>
     <td>
@@ -131,7 +142,7 @@
     <td />
     <td />
     <td>
-      <button on:click={toggle_add} >Agregar</button>
+      <button on:click={toggle_add}>Agregar</button>
     </td>
     <td />
     <td />

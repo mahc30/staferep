@@ -6,6 +6,7 @@
   import AddRow from "../layout/table/AddRow.svelte";
   import format from "../../util/format_data";
   import util from "../../util/util";
+
   /* Example of what i need to do 
       let headers = [{ title: "Obra" }, { title: "Compositor" }];
   let rows = [
@@ -74,15 +75,28 @@
 
   //TODO
   async function handle_Add_Element(e) {
-    let id;
-    if (e.detail) id = e.detail.id;
+    if (!e.detail) return;
 
+    /*
+    let file;
+    let file_exists;
+
+    if(e.detail.file_exists){
+      file = new FormData();
+      file.append('file', e.detail.file_exists[0]);
+      file_exists = true;
+    }
+  */
     let new_obra = e.detail;
+    console.log("NEw ", new_obra, "json", e.detail);
     try {
       let edit = await fetch("http://localhost:3000/obras/add", {
         method: "POST",
         headers: {
-          "Content-type": "application/json"
+          "Content-Type": "application/json"
+        },
+        formData: {
+          file: "And this is where i'd put my File ... IF I HAD ONE"
         },
         body: JSON.stringify(new_obra)
       });
@@ -178,7 +192,6 @@
 <table>
   <thead>
     <tr>
-
       {#await handle_Update_Table}
         <th>
           <h6>Cargando...</h6>
@@ -194,6 +207,7 @@
     </tr>
   </thead>
 
+  <!--- Rows --->
   <tbody>
     {#await handle_Update_Table}
       <tr>
