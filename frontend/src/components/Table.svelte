@@ -142,11 +142,20 @@
     is_editing = -1;
   }
 
-  function handle_Download_Element(e) {
-    console.log("Downloading", e.detail.id);
+  async function handle_Download_Element(e) {
     let id;
-    if (e.detail) id = e.detail.id;
-    else return;
+    if (e.detail) {
+      id = e.detail.id;
+
+      let checkForDownload = await fetch(
+        `http://localhost:3000/obras/download/${id}`
+      );
+
+      if (checkForDownload.ok)
+        //Triggers Download
+        window.location = `http://localhost:3000/obras/download/${id}`;
+      else alert("Error intentando descargar");
+    }
   }
 
   async function handle_Delete_Element(e) {

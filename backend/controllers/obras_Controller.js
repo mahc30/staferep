@@ -1,5 +1,6 @@
 const logger = require('../util/logger');
 const Obra = require('../db/models/Obra');
+const path = require('path');
 
 /*
     INDEX:
@@ -29,14 +30,14 @@ exports.find_all = async function (req, res) {
 /* GET obras by id. */
 exports.find_id = async function (req, res) {
     try {
-        const obra = await Obra.findById(req.body.obra_id);
+        const obra = await Obra.findById(req.params.obra_id);
 
         if (obra) {
             logger.new_Log(req.method, req.baseUrl, true);
             res.status(200).send(obra);
         }
-
-        res.sendStatus(204);
+        else
+            res.sendStatus(204);
 
     }
     catch (err) {
@@ -46,19 +47,37 @@ exports.find_id = async function (req, res) {
     }
 };
 
+/* GET download */
+exports.download = async function (req, res) {
+
+    try {
+        let obra = await Obra.findById(req.params.obra_id);
+        
+        if (obra && obra.file_exists) {
+            let download_path = path.join(__dirname, "..", "repertorio", obra.level, `${obra.name}.pdf`);
+            res.status(200).download(download_path);
+        }
+        else res.sendStatus(204);
+    }
+    catch (err) {
+        console.log("Download Error: ", err);
+        res.sendStatus(500);
+    }
+
+};
+
 // TODO Handle Get by Filters
 /* Post Obra */
 exports.new_obra = async function (req, res) {
     //TODO handle possible pdf submit
-    let file_exists = false //req.body.file_exists;
-    console.log(req.body);
+    let file_exists = req.body.file_exists;
 
     let newObra = new Obra(
         {
             name: req.body.obra_name,
             composer: req.body.obra_composer,
             level: req.body.obra_level,
-            //file_exists: file_exists || false
+            file_exists: file_exists || false
         });
 
     try {

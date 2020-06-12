@@ -20,7 +20,7 @@
 </script>
 
 <style>
-  th,
+  
   td {
     text-align: center;
     color: black;
@@ -75,19 +75,19 @@
       <button
         id={obra.id}
         on:click={trigger_download_event}
-        disabled={obra.file_exists}>
+        disabled={!obra.file_exists}> <!-- For Some Reason file_exists true is detected as False, so that's why there's a !!negation -->
         Descargar
       </button>
     </td>
     <td>
       <button id={obra.id} on:click={trigger_delete_event}>Eliminar</button>
     </td>
-  {:else}
+  {:else} <!-- If it's not auth user can only see download -->
     <td>
       <button
         id={obra.id}
         on:click={trigger_download_event}
-        disabled={obra.file_exists}>
+        disabled={!obra.file_exists}>
         Descargar
       </button>
     </td>

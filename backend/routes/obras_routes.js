@@ -7,7 +7,10 @@ const obra_controller = require('../controllers/obras_Controller');
 router.get('/findall', obra_controller.find_all);
 
 /* GET obras by id. */
-router.get('/findid', obra_controller.find_id);
+router.get('/findid/:obra_id', obra_controller.find_id);
+
+/* post downloadObra. */
+router.get('/download/:obra_id', obra_controller.download);
 
 /* Post Create new Obra */
 router.post('/add', obra_controller.new_obra);

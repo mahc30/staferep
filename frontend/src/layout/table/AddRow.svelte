@@ -15,7 +15,7 @@
     { id: 3, text: `Orquesta` }
   ];
 
-  let isAdding = true;
+  let isAdding = false;
   let new_name = "";
   let new_composer = "";
   let newFile = [];
@@ -46,10 +46,11 @@
       obra_name: new_name,
       obra_composer: new_composer,
       obra_level: level.text,
-      file_exists: newFile || false
+      file_exists: true
     };
 
     reset_component();
+    toggle_add();
     dispatch("obraAdded", new_obra);
   }
 
