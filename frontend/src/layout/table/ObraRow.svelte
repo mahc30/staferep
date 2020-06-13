@@ -6,21 +6,49 @@
   export let IS_AUTH;
   export let i;
 
-  function trigger_delete_event(e) {
-    dispatch("deleteObra", { id: e.target.id });
+  async function handle_Delete_Element(e) {
+    let id = e.target.id;
+
+    try {
+      let delete_req = await fetch("http://localhost:3000/obras/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({ obra_id: id })
+      });
+
+      if (delete_req.ok) dispatch("ObraDeleted");
+
+      /* TODO Reimplement This but prettier
+      let new_rows = util.delete_at_index(rows, id);
+      console.log(new_rows);
+      handle_Update_Table({ rows: new_rows });
+      */
+    } catch (error) {
+      console.log("Error Eliminando Obra", error);
+    }
   }
 
   function trigger_edit_event(e) {
     dispatch("editObra", { id: e.target.id });
   }
 
-  function trigger_download_event(e) {
-    dispatch("downloadObra", { id: e.target.id });
+  async function handle_Download_Element(e) {
+    let id = e.target.id;
+
+    let checkForDownload = await fetch(
+      `http://localhost:3000/obras/download/${id}`
+    );
+
+    if (checkForDownload.ok)
+      //Triggers Download
+      window.location = `http://localhost:3000/obras/download/${id}`;
+    else alert("Error intentando descargar");
   }
 </script>
 
 <style>
-  
   td {
     text-align: center;
     color: black;
@@ -74,22 +102,26 @@
     <td>
       <button
         id={obra.id}
-        on:click={trigger_download_event}
-        disabled={!obra.file_exists}> <!-- For Some Reason file_exists true is detected as False, so that's why there's a !!negation -->
+        on:click={handle_Download_Element}
+        disabled={!obra.file_exists}>
+        <!-- For Some Reason file_exists true is detected as False, so that's why there's a !!negation -->
         Descargar
       </button>
     </td>
     <td>
-      <button id={obra.id} on:click={trigger_delete_event}>Eliminar</button>
+      <button id={obra.id} on:click={handle_Delete_Element}>Eliminar</button>
     </td>
-  {:else} <!-- If it's not auth user can only see download -->
+  {:else}
+    <!-- If it's not auth user can only see download -->
+    <td/>
     <td>
       <button
         id={obra.id}
-        on:click={trigger_download_event}
+        on:click={handle_Download_Element}
         disabled={!obra.file_exists}>
         Descargar
       </button>
     </td>
+    <td/>
   {/if}
 </tr>

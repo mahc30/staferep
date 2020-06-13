@@ -26,6 +26,7 @@
   let headers = [];
   let rows = [];
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
+  let is_editing = -1;
 
   //For initial state
   onMount(async () => {
@@ -73,112 +74,21 @@
     })();
   }
 
-  //TODO
-  async function handle_Add_Element(e) {
-    if (!e.detail) return;
-
-    /*
-    let file;
-    let file_exists;
-
-    if(e.detail.file_exists){
-      file = new FormData();
-      file.append('file', e.detail.file_exists[0]);
-      file_exists = true;
-    }
-  */
-    let new_obra = e.detail;
-    console.log("NEw ", new_obra, "json", e.detail);
-    try {
-      let edit = await fetch("http://localhost:3000/obras/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        formData: {
-          file: "And this is where i'd put my File ... IF I HAD ONE"
-        },
-        body: JSON.stringify(new_obra)
-      });
-
-      fetch_Obra_list({});
-    } catch (error) {
-      console.log("Error Eliminando Obra", error);
-    }
-  }
-
-  let is_editing = -1;
   async function handle_Edit_Element(e) {
-    let id = e.detail.id;
-    if (!e.detail.edit) {
-      //First Click, the "I'm going to edit"
-      is_editing = e.detail.id;
-      return;
-    }
-
-    let new_obra = e.detail;
-    delete new_obra.edit; //I don't need it
-
-    try {
-      let edit = await fetch("http://localhost:3000/obras/update", {
-        method: "PATCH",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(new_obra)
-      });
-
-      if (edit.ok) {
-        let edited = await edit.json();
-        let index = rows.findIndex(obra => {
-          return obra.id === edited._id;
-        });
-        fetch_Obra_list({});
+    if (e.detail) is_editing = e.detail.id;
+    //Edit Obra Event
+    else {
+      //Obra Edited Event
+      is_editing = -1;
+      try {
+        await fetch_Obra_list({});
+      } catch (err) {
+        console.log(err);
       }
-    } catch (error) {
-      console.log("Error Eliminando Obra", error);
-    }
-
-    is_editing = -1;
-  }
-
-  async function handle_Download_Element(e) {
-    let id;
-    if (e.detail) {
-      id = e.detail.id;
-
-      let checkForDownload = await fetch(
-        `http://localhost:3000/obras/download/${id}`
-      );
-
-      if (checkForDownload.ok)
-        //Triggers Download
-        window.location = `http://localhost:3000/obras/download/${id}`;
-      else alert("Error intentando descargar");
     }
   }
 
-  async function handle_Delete_Element(e) {
-    let id;
-    if (e.detail) id = e.detail.id;
-    else return;
-
-    try {
-      await fetch("http://localhost:3000/obras/delete", {
-        method: "DELETE",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify({ obra_id: id })
-      });
-
-      let new_rows = util.delete_at_index(rows, id);
-      console.log(new_rows);
-      handle_Update_Table({ rows: new_rows });
-    } catch (error) {
-      console.log("Error Eliminando Obra", error);
-    }
-  }
+  
 </script>
 
 <style>
@@ -226,20 +136,19 @@
 
       {#each rows as row, i}
         {#if row.id === is_editing}
-          <EditRow obra={row} on:rowEdited={handle_Edit_Element} />
+          <EditRow obra={row} on:ObraEdited={handle_Edit_Element} />
         {:else}
           <ObraRow
             obra={row}
             {IS_AUTH}
             {i}
             on:editObra={handle_Edit_Element}
-            on:downloadObra={handle_Download_Element}
-            on:deleteObra={handle_Delete_Element} />
+            on:ObraDeleted={fetch_Obra_list} />
         {/if}
       {/each}
 
       {#if IS_AUTH}
-        <AddRow on:obraAdded={handle_Add_Element} />
+        <AddRow on:obraAdded={fetch_Obra_list} />
       {/if}
 
     {:catch error}

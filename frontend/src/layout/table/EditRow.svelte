@@ -11,22 +11,37 @@
   ];
 
   export let obra;
-  let new_name;
-  let new_composer;
-  let new_file;
-  
-  let level = levels.find(level => level.text === obra.level)
-//TODO validations that all fields have been modified
+  let new_name = obra.name;
+  let new_composer = obra.composer;
+  let new_file = false; //TODO temporal value til file upload is implemented
+  let new_level = levels.find(new_level => new_level.text === obra.new_level);
 
-  function edit(e) {
-    let new_obra = {obra_id: obra.id, level:level.text, edit: true};
+  //TODO validations that all fields have been modified
 
-    //That variable naming kys
-    if(new_name) new_obra.name = new_name;
-    if(new_composer) new_obra.composer = new_composer;
-    if(new_file) new_obra.file_exists = new_file;
+  async function handle_Edit_Element(e) {
+    let new_obra = {
+      obra_id: obra.id,
+      name: new_name || obra.name,
+      composer: new_composer || obra.composer,
+      level: new_level.text,
+      file_exists: new_file || false
+    };
 
-    dispatch("rowEdited", new_obra);
+    try {
+      let edit = await fetch("http://localhost:3000/obras/update", {
+        method: "PATCH",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(new_obra)
+      });
+
+      if (edit.ok) {
+        dispatch("ObraEdited");
+      }
+    } catch (error) {
+      console.log("Error Editando Obra", error);
+    }
   }
 </script>
 
@@ -66,16 +81,16 @@
 
 <tr>
   <td class="pl-4">
-    <input type="text" placeholder={obra.name} bind:value={new_name} />
+    <input type="text" bind:value={new_name} />
   </td>
   <td>
-    <input type="text" placeholder={obra.composer} bind:value={new_composer} />
+    <input type="text" bind:value={new_composer} />
   </td>
   <td>
     <div class="column">
-      <select bind:value={level}>
-        {#each levels as level}
-          <option value={level}>{level.text}</option>
+      <select bind:value={new_level}>
+        {#each levels as new_level}
+          <option value={new_level}>{new_level.text}</option>
         {/each}
       </select>
     </div>
@@ -84,6 +99,6 @@
     <button>Subir Archivo</button>
   </td>
   <td>
-    <button on:click={edit}>Guardar Cambios</button>
+    <button on:click={handle_Edit_Element}>Guardar Cambios</button>
   </td>
 </tr>

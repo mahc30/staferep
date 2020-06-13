@@ -1,5 +1,5 @@
 <script>
-  //It's Pretty much the same as EditRow, only changes the event and some "save()" logic
+  //It's Pretty much the same as EditRow, only changes the event and some "handle_Add_Element()" logic
   //But made it a different component for legibility
   //Maybe, maybe i'll come back one day and fix this, or not
 
@@ -40,23 +40,39 @@
     isLoading = !isLoading;
   }
 
-  //TODO validations that all fields have been modified
-  function save(e) {
+  function upload(e) {
+    toggle_load();
+    console.log("NOT IMPLEMENTED upload")
+  }
+
+  async function handle_Add_Element(e) {
+    if (!e.detail) return;
+    reset_component();
+    toggle_add();
+
     let new_obra = {
       obra_name: new_name,
       obra_composer: new_composer,
       obra_level: level.text,
-      file_exists: true
+      file_exists: true //TODO implement upload files
     };
 
-    reset_component();
-    toggle_add();
-    dispatch("obraAdded", new_obra);
-  }
+    try {
+      let edit = await fetch("http://localhost:3000/obras/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        formData: {
+          file: "And this is where i'd put my File ... IF I HAD ONE"
+        },
+        body: JSON.stringify(new_obra)
+      });
 
-  function upload(e) {
-    toggle_load();
-    newFile = e.target.files;
+      dispatch("obraAdded", {});
+    } catch (error) {
+      console.log("Error Agregando Obra", error);
+    }
   }
 </script>
 
@@ -134,7 +150,7 @@
       {/if}
     </td>
     <td>
-      <button on:click={save}>Agregar</button>
+      <button on:click={handle_Add_Element}>Agregar</button>
     </td>
   </tr>
 {:else}
