@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
+//File Handler Middleware configuration
+const multer = require('multer');
+const path = require('path');
+
+const upload_path = path.join(__dirname, "..", "uploads");
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, upload_path)
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+var upload = multer({storage: storage});
+
 const obra_controller = require('../controllers/obras_Controller');
 
 /* GET obras listing. */
@@ -15,8 +30,11 @@ router.get('/download/:obra_id', obra_controller.download);
 /* Post Create new Obra */
 router.post('/add', obra_controller.new_obra);
 
-/* Post find obras by Filtes */
+/* Post find obras by Filters */
 router.post('/findFilter', obra_controller.find_all_filtered);
+
+/* Post find obras by Filters */
+router.post('/upload', upload.single('file'), obra_controller.upload);
 
 /* Delete Obra by id */
 router.delete('/delete', obra_controller.delete_obra);

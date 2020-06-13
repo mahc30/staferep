@@ -2,6 +2,7 @@ const logger = require('../util/logger');
 const Obra = require('../db/models/Obra');
 const path = require('path');
 
+
 /*
     INDEX:
 Get Obras List
@@ -17,12 +18,12 @@ exports.find_all = async function (req, res) {
 
     try {
         const obra_list = await Obra.find();
-        await logger.new_Log(req.method, req.baseUrl, true);
+        logger.new_Log(req.method, req.baseUrl, true);
         res.status(200).send(obra_list);
     }
     catch
     {
-        await logger.new_Log(req.method, req.baseUrl, false);
+        logger.new_Log(req.method, req.baseUrl, false);
         res.status(500).send("F");
     }
 };
@@ -52,7 +53,7 @@ exports.download = async function (req, res) {
 
     try {
         let obra = await Obra.findById(req.params.obra_id);
-        
+
         if (obra && obra.file_exists) {
             let download_path = path.join(__dirname, "..", "repertorio", obra.level, `${obra.name}.pdf`);
             res.status(200).download(download_path);
@@ -141,3 +142,10 @@ exports.find_all_filtered = async function (req, res) {
         res.status(500).send("F");
     }
 }
+
+/* POST upload file */
+exports.upload = async function (req, res) {
+    console.log(req.file, req.body)
+    if(!req.file) res.status(500).send("Error guardando archivo");
+    else res.send(200);
+}   

@@ -15,21 +15,24 @@
     { id: 3, text: `Orquesta` }
   ];
 
-  let isAdding = false;
-  let new_name = "";
-  let new_composer = "";
-  let newFile = [];
-  let isLoading = false;
+  let newName = "";
+  let newComposer = "";
   let level = levels[0];
+  let files = []; //Different naming convention because svelte only works with this var
+  let isLoading = false;
+  let isAdding = false;
+  let files_exist = false;
 
   function reset_component() {
     isAdding = false;
-    new_name;
-    new_composer;
-    newFile = [];
+    newName = "";
+    newComposer = "";
+    files = [];
     isLoading = false;
     level = levels[0];
-    toggle_add();
+    isAdding = false;
+    isLoading = false;
+    files_exist = false;
   }
 
   function toggle_add() {
@@ -40,9 +43,20 @@
     isLoading = !isLoading;
   }
 
-  function upload(e) {
+  async function upload_file(e) {
     toggle_load();
-    console.log("NOT IMPLEMENTED upload")
+    let data = new FormData(); //Use FormData() for multipart/form-data
+
+    data.append("file", files[0]);
+    data.append("name", newName);
+    //TODO Somehow make a relation between uploaded File and new Obra upload
+    await fetch("http://localhost:3000/obras/upload", {
+      method: "POST",
+      body: data
+    }).then(success => {
+      files_exist = true;
+      toggle_load();
+    });
   }
 
   async function handle_Add_Element(e) {
@@ -51,19 +65,19 @@
     toggle_add();
 
     let new_obra = {
-      obra_name: new_name,
-      obra_composer: new_composer,
+      obra_name: newName,
+      obra_composer: newComposer,
       obra_level: level.text,
-      file_exists: true //TODO implement upload files
+      file_exists: files_exist //TODO implement upload files
     };
 
     try {
-      let edit = await fetch("http://localhost:3000/obras/add", {
+      let add = await fetch("http://localhost:3000/obras/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        formData: {
+        data: {
           file: "And this is where i'd put my File ... IF I HAD ONE"
         },
         body: JSON.stringify(new_obra)
@@ -128,10 +142,10 @@
 {#if isAdding}
   <tr>
     <td class="pl-4">
-      <input type="text" placeholder="nombre" bind:value={new_name} />
+      <input type="text" placeholder="nombre" bind:value={newName} />
     </td>
     <td>
-      <input type="text" placeholder="compositor" bind:value={new_composer} />
+      <input type="text" placeholder="compositor" bind:value={newComposer} />
     </td>
     <td>
       <div class="column">
@@ -143,10 +157,14 @@
       </div>
     </td>
     <td>
-      {#if !isLoading}
-        <p on:click={toggle_load}>To Be Implemented</p>
+      {#if !files_exist && !isLoading}
+        <input name="file" type="file" bind:files on:change={upload_file} />
+      {:else if isLoading}
+        <p>Cargando...</p>
+      {:else if files_exist}
+        <p>Archivos Cargados! :)</p>
       {:else}
-        <p on:click={toggle_load}>To Be Implemented</p>
+        <p>Error Cargando Archivo</p>
       {/if}
     </td>
     <td>

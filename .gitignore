@@ -1,2 +1,4 @@
 /.git
 /backend/util/secrets
+/backend/uploads
+
