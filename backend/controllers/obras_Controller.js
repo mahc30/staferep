@@ -55,7 +55,7 @@ exports.download = async function (req, res) {
         let obra = await Obra.findById(req.params.obra_id);
 
         if (obra && obra.file_exists) {
-            let download_path = path.join(__dirname, "..", "repertorio", obra.level, `${obra.name}.pdf`);
+            let download_path = path.join(__dirname, "..", "repertorio",`${obra.name}.pdf`);
             res.status(200).download(download_path);
         }
         else res.sendStatus(204);
@@ -145,7 +145,6 @@ exports.find_all_filtered = async function (req, res) {
 
 /* POST upload file */
 exports.upload = async function (req, res) {
-    console.log(req.file, req.body)
     if(!req.file) res.status(500).send("Error guardando archivo");
     else res.send(200);
 }   

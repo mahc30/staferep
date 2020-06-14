@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-//File Handler Middleware configuration
+//File Handler Middleware configuration TODO move this to an independent module or something
 const multer = require('multer');
 const path = require('path');
 
-const upload_path = path.join(__dirname, "..", "uploads");
+const upload_path = path.join(__dirname, "..", "repertorio");
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, upload_path)

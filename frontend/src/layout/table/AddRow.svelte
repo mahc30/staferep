@@ -5,6 +5,7 @@
 
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
+  import { format_file_name } from "../../../util/format_data";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -17,11 +18,16 @@
 
   let newName = "";
   let newComposer = "";
-  let level = levels[0];
+  let new_level = levels[0];
   let files = []; //Different naming convention because svelte only works with this var
   let isLoading = false;
   let isAdding = false;
   let files_exist = false;
+  let is_valid = false;
+
+  function validate_input() {
+    is_valid = newName && newComposer && new_level.id != -1;
+  }
 
   function reset_component() {
     isAdding = false;
@@ -29,10 +35,11 @@
     newComposer = "";
     files = [];
     isLoading = false;
-    level = levels[0];
+    new_level = levels[0];
     isAdding = false;
     isLoading = false;
     files_exist = false;
+    is_valid = false;
   }
 
   function toggle_add() {
@@ -46,9 +53,12 @@
   async function upload_file(e) {
     toggle_load();
     let data = new FormData(); //Use FormData() for multipart/form-data
+    let formatted_file_name = format_file_name(files[0].name, newName);
 
-    data.append("file", files[0]);
-    data.append("name", newName);
+    //Renaming the file in the front is necessary because Multer limitations for handling the files
+    const myNewFile = new File([files[0]], formatted_file_name, { type: data.type });
+    data.append("file", myNewFile);
+
     //TODO Somehow make a relation between uploaded File and new Obra upload
     await fetch("http://localhost:3000/obras/upload", {
       method: "POST",
@@ -60,14 +70,12 @@
   }
 
   async function handle_Add_Element(e) {
-    if (!e.detail) return;
-    reset_component();
-    toggle_add();
+    if (files[0]) await upload_file();
 
     let new_obra = {
       obra_name: newName,
       obra_composer: newComposer,
-      obra_level: level.text,
+      obra_level: new_level.text,
       file_exists: files_exist //TODO implement upload files
     };
 
@@ -86,6 +94,9 @@
       dispatch("obraAdded", {});
     } catch (error) {
       console.log("Error Agregando Obra", error);
+    } finally {
+      reset_component();
+      toggle_add();
     }
   }
 </script>
@@ -119,21 +130,6 @@
     color: white;
   }
 
-  /*
-  .input-button {
-    position: relative;
-  }
-
-  label {
-    max-width: 100%;
-    overflow: hidden;
-    opacity: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-*/
-
   .pl-4 {
     padding-left: 4%;
   }
@@ -142,23 +138,31 @@
 {#if isAdding}
   <tr>
     <td class="pl-4">
-      <input type="text" placeholder="nombre" bind:value={newName} />
+      <input
+        type="text"
+        placeholder="nombre"
+        bind:value={newName}
+        on:change={validate_input} />
     </td>
     <td>
-      <input type="text" placeholder="compositor" bind:value={newComposer} />
+      <input
+        type="text"
+        placeholder="compositor"
+        bind:value={newComposer}
+        on:change={validate_input} />
     </td>
     <td>
       <div class="column">
-        <select bind:value={level}>
-          {#each levels as level}
-            <option value={level}>{level.text}</option>
+        <select bind:value={new_level} on:change={validate_input}>
+          {#each levels as new_level}
+            <option value={new_level}>{new_level.text}</option>
           {/each}
         </select>
       </div>
     </td>
     <td>
       {#if !files_exist && !isLoading}
-        <input name="file" type="file" bind:files on:change={upload_file} />
+        <input name="file" type="file" accept=".pdf,.png,.jpg" bind:files />
       {:else if isLoading}
         <p>Cargando...</p>
       {:else if files_exist}
@@ -168,7 +172,9 @@
       {/if}
     </td>
     <td>
-      <button on:click={handle_Add_Element}>Agregar</button>
+      <button on:click={handle_Add_Element} disabled={!is_valid}>
+        Agregar
+      </button>
     </td>
   </tr>
 {:else}
@@ -177,7 +183,7 @@
     <td />
     <td />
     <td>
-      <button on:click={toggle_add}>Agregar</button>
+      <button on:click={toggle_add}>Nueva Obra</button>
     </td>
     <td />
     <td />

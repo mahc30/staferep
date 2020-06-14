@@ -4,7 +4,7 @@
   import EditRow from "../layout/table/EditRow.svelte";
   import ObraRow from "../layout/table/ObraRow.svelte";
   import AddRow from "../layout/table/AddRow.svelte";
-  import format from "../../util/format_data";
+  import { format_obras_data } from "../../util/format_data";
   import util from "../../util/util";
 
   /* Example of what i need to do 
@@ -67,7 +67,7 @@
       const response = await fetch(url, options);
 
       const raw_data = await response.json();
-      let parsed_data = format(raw_data);
+      let parsed_data = format_obras_data(raw_data);
 
       handle_Update_Table(parsed_data);
       return raw_data; //Just because it's necessary to return a promise, probably, docs do it like this
@@ -87,8 +87,6 @@
       }
     }
   }
-
-  
 </script>
 
 <style>
