@@ -113,7 +113,7 @@
     </td>
   {:else}
     <!-- If it's not auth user can only see download -->
-    <td/>
+    <td />
     <td>
       <button
         id={obra.id}
@@ -122,6 +122,6 @@
         Descargar
       </button>
     </td>
-    <td/>
+    <td />
   {/if}
 </tr>

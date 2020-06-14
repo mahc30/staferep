@@ -5,7 +5,7 @@
 
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
-  import { format_file_name } from "../../../util/format_data";
+  import { upload_file } from "../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -15,18 +15,17 @@
     { id: 2, text: `Preorquesta` },
     { id: 3, text: `Orquesta` }
   ];
-
   let newName = "";
   let newComposer = "";
   let new_level = levels[0];
   let files = []; //Different naming convention because svelte only works with this var
-  let isLoading = false;
+  let fileIsLoading = false;
   let isAdding = false;
-  let files_exist = false;
-  let is_valid = false;
+  let filesExist = false;
+  let isValidInput = false;
 
   function validate_input() {
-    is_valid = newName && newComposer && new_level.id != -1;
+    isValidInput = newName && newComposer && new_level.id != -1;
   }
 
   function reset_component() {
@@ -34,12 +33,11 @@
     newName = "";
     newComposer = "";
     files = [];
-    isLoading = false;
     new_level = levels[0];
     isAdding = false;
-    isLoading = false;
-    files_exist = false;
-    is_valid = false;
+    fileIsLoading = false;
+    filesExist = false;
+    isValidInput = false;
   }
 
   function toggle_add() {
@@ -47,36 +45,24 @@
   }
 
   function toggle_load() {
-    isLoading = !isLoading;
+    fileIsLoading = !fileIsLoading;
   }
 
-  async function upload_file(e) {
+  async function handle_upload_file(e) {
     toggle_load();
-    let data = new FormData(); //Use FormData() for multipart/form-data
-    let formatted_file_name = format_file_name(files[0].name, newName);
-
-    //Renaming the file in the front is necessary because Multer limitations for handling the files
-    const myNewFile = new File([files[0]], formatted_file_name, { type: data.type });
-    data.append("file", myNewFile);
-
-    //TODO Somehow make a relation between uploaded File and new Obra upload
-    await fetch("http://localhost:3000/obras/upload", {
-      method: "POST",
-      body: data
-    }).then(success => {
-      files_exist = true;
+      await upload_file(files[0], newName)
+      filesExist = true;
       toggle_load();
-    });
   }
 
   async function handle_Add_Element(e) {
-    if (files[0]) await upload_file();
+    if (files[0]) await handle_upload_file();
 
     let new_obra = {
       obra_name: newName,
       obra_composer: newComposer,
       obra_level: new_level.text,
-      file_exists: files_exist //TODO implement upload files
+      file_exists: filesExist //TODO implement upload files
     };
 
     try {
@@ -96,7 +82,6 @@
       console.log("Error Agregando Obra", error);
     } finally {
       reset_component();
-      toggle_add();
     }
   }
 </script>
@@ -161,18 +146,18 @@
       </div>
     </td>
     <td>
-      {#if !files_exist && !isLoading}
-        <input name="file" type="file" accept=".pdf,.png,.jpg" bind:files />
-      {:else if isLoading}
+      {#if !filesExist && !fileIsLoading}
+        <input name="file" type="file" accept=".pdf" bind:files />
+      {:else if fileIsLoading}
         <p>Cargando...</p>
-      {:else if files_exist}
+      {:else if filesExist}
         <p>Archivos Cargados! :)</p>
       {:else}
         <p>Error Cargando Archivo</p>
       {/if}
     </td>
     <td>
-      <button on:click={handle_Add_Element} disabled={!is_valid}>
+      <button on:click={handle_Add_Element} disabled={!isValidInput}>
         Agregar
       </button>
     </td>

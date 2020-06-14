@@ -20,7 +20,7 @@ export function format_obras_data(req){
 }
 
 export function format_file_name(file_name, new_name){
-    let new_file_name = file_name.split(".");
+    let new_file_name = file_name.split("."); //Split name by . to get [name, extension]
     new_file_name[0] = new_name;
     return new_file_name.join(".");
 }

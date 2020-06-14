@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { upload_file } from "../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -11,20 +12,42 @@
   ];
 
   export let obra;
-  let new_name = obra.name;
-  let new_composer = obra.composer;
-  let new_file = false; //TODO temporal value til file upload is implemented
-  let new_level = levels.find(new_level => new_level.text === obra.new_level);
+  let newName = obra.name;
+  let newComposer = obra.composer;
+  let files = []; //svelte requires this var name
+  let newLevel = levels.find(newLevel => newLevel.text === obra.level);
+  let fileIsLoading = false;
+  let filesExist = obra.file_exist || false;
+  let isValidInput = false;
 
-  //TODO validations that all fields have been modified
+  function validate_input(e) {
+    isValidInput =
+      (newName && newName != obra.name) ||
+      (newComposer && newComposer != obra.composer) ||
+      (newLevel.id != -1 && newLevel.text != obra.level) ||
+      files[0];
+  }
 
-  async function handle_Edit_Element(e) {
+  async function handle_upload_file(e) {
+    toggle_load();
+    upload_file(files[0], newName);
+    filesExist = true;
+    toggle_load();
+  }
+
+  function toggle_load() {
+    fileIsLoading = !fileIsLoading;
+  }
+
+  async function handle_edit_element(e) {
+    if (files[0]) await handle_upload_file();
+
     let new_obra = {
       obra_id: obra.id,
-      name: new_name || obra.name,
-      composer: new_composer || obra.composer,
-      level: new_level.text,
-      file_exists: new_file || false
+      name: newName || obra.name,
+      composer: newComposer || obra.composer,
+      level: newLevel.text,
+      file_exists: filesExist
     };
 
     try {
@@ -81,24 +104,39 @@
 
 <tr>
   <td class="pl-4">
-    <input type="text" bind:value={new_name} />
+    <input type="text" bind:value={newName} on:change={validate_input} />
   </td>
   <td>
-    <input type="text" bind:value={new_composer} />
+    <input type="text" bind:value={newComposer} on:change={validate_input} />
   </td>
   <td>
     <div class="column">
-      <select bind:value={new_level}>
-        {#each levels as new_level}
-          <option value={new_level}>{new_level.text}</option>
+      <select bind:value={newLevel} on:change={validate_input}>
+        {#each levels as newLevel}
+          <option value={newLevel}>{newLevel.text}</option>
         {/each}
       </select>
     </div>
   </td>
   <td>
-    <button>Subir Archivo</button>
+    {#if !filesExist && !fileIsLoading}
+      <input
+        name="file"
+        type="file"
+        accept=".pdf"
+        bind:files
+        on:change={validate_input} />
+    {:else if fileIsLoading}
+      <p>Cargando...</p>
+    {:else if filesExist}
+      <p>Archivos Cargados! :)</p>
+    {:else}
+      <p>Error Cargando Archivo</p>
+    {/if}
   </td>
   <td>
-    <button on:click={handle_Edit_Element}>Guardar Cambios</button>
+    <button on:click={handle_edit_element} disabled={!isValidInput}>
+      Guardar Cambios
+    </button>
   </td>
 </tr>
