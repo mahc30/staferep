@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const Auth = new Schema({
     password: {
         type: String,
-        required: [true, 'No name specified']
+        required: [true, 'No password specified']
     }
 });
 

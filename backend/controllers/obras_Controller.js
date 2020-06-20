@@ -1,6 +1,9 @@
 const logger = require('../util/logger');
 const Obra = require('../db/models/Obra');
+const File = require('../db/models/File');
+const ObjectId = require('mongodb').ObjectID;
 const path = require('path');
+const fs = require('fs');
 
 
 /*
@@ -39,7 +42,6 @@ exports.find_id = async function (req, res) {
         }
         else
             res.sendStatus(204);
-
     }
     catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);
@@ -55,7 +57,7 @@ exports.download = async function (req, res) {
         let obra = await Obra.findById(req.params.obra_id);
 
         if (obra && obra.file_exists) {
-            let download_path = path.join(__dirname, "..", "repertorio",`${obra.name}.pdf`);
+            let download_path = path.join(__dirname, "..", "repertorio", `${obra.name}.pdf`);
             res.status(200).download(download_path);
         }
         else res.sendStatus(204);
@@ -82,10 +84,9 @@ exports.new_obra = async function (req, res) {
         });
 
     try {
-        let save_status = await newObra.save();
+        let save_obra = await newObra.save();
         logger.new_Log(req.method, req.baseUrl, true)
-
-        res.status(200).send("Obra Guardada :)");
+        res.status(200).send(save_obra);
 
     } catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);
@@ -145,6 +146,26 @@ exports.find_all_filtered = async function (req, res) {
 
 /* POST upload file */
 exports.upload = async function (req, res) {
-    if(!req.file) res.status(500).send("Error guardando archivo");
-    else res.send(200);
+    /* This code executes when file has already been saved.
+    As multer doesn't have much customization and stuff 
+    and will save everything locally, it's necesary to add
+    an external data storage so files can persist between containers */
+    if (!req.file) { //This means multer had an error
+        res.status(500).send("Error guardando archivo.Multer");
+        return;
+    }
+    const file_path = req.file.path;
+    const file_name = req.file.filename;
+    const file = fs.readFileSync(file_path);
+    const obra_id = req.params.obra_id;
+
+    const mongo_file = new File({
+        name: file_name,
+        parent_id: ObjectId(obra_id),
+        data: file,
+        content_type: "document/pdf",
+    })
+
+    mongo_file.save()
+    res.send(200);
 }   

@@ -34,12 +34,12 @@ router.post('/add', obra_controller.new_obra);
 router.post('/findFilter', obra_controller.find_all_filtered);
 
 /* Post find obras by Filters */
-router.post('/upload', upload.single('file'), obra_controller.upload);
+router.post('/upload/:obra_id', upload.single('file'), obra_controller.upload);
 
 /* Delete Obra by id */
 router.delete('/delete', obra_controller.delete_obra);
 
 /* PATCH Obra by id */
-router.patch('/update', obra_controller.patch_obra);
+router.patch('/update/', obra_controller.patch_obra);
 
 module.exports = router;

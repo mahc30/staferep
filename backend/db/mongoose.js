@@ -19,7 +19,9 @@ fs.readFile(route, 'utf8', (err, data) => {
     let database = data[2];
 
     let uri = `mongodb+srv://${username}:${password}@cluster0-jxu3e.gcp.mongodb.net/${database}?retryWrites=true&w=majority`;
-    mongoose.set('debug', true);
+    //mongoose.set('debug', true);
+    //Application will crash if debug is active when trying to upload file, apparently it tries to log the entire Buffer, wich breaks something and crashes vscode
+
     mongoose.connect(uri,
         {
             useNewUrlParser: true,

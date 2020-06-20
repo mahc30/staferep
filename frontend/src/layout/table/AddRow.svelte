@@ -48,16 +48,18 @@
     fileIsLoading = !fileIsLoading;
   }
 
-  async function handle_upload_file(e) {
+  function toggle_files() {
+    filesExist = !filesExist;
+  }
+
+  async function handle_upload_file(id) {
     toggle_load();
-      await upload_file(files[0], newName)
-      filesExist = true;
-      toggle_load();
+    await upload_file(files[0], newName, id);
+    toggle_load();
   }
 
   async function handle_Add_Element(e) {
-    if (files[0]) await handle_upload_file();
-
+    filesExist = true;
     let new_obra = {
       obra_name: newName,
       obra_composer: newComposer,
@@ -65,24 +67,26 @@
       file_exists: filesExist //TODO implement upload files
     };
 
-    try {
-      let add = await fetch("http://localhost:3000/obras/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        data: {
-          file: "And this is where i'd put my File ... IF I HAD ONE"
-        },
-        body: JSON.stringify(new_obra)
+    fetch("http://localhost:3000/obras/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        file: "And this is where i'd put my File ... IF I HAD ONE"
+      },
+      body: JSON.stringify(new_obra)
+    })
+      .then(res => res.json())
+      .then(saved_obra => {
+        console.log("files", filesExist, "obra", saved_obra);
+        if (filesExist) handle_upload_file(saved_obra._id);
+        dispatch("obraAdded", {});
+        reset_component();
+      })
+      .catch(err => {
+        console.log(err);
       });
-
-      dispatch("obraAdded", {});
-    } catch (error) {
-      console.log("Error Agregando Obra", error);
-    } finally {
-      reset_component();
-    }
   }
 </script>
 
@@ -147,7 +151,12 @@
     </td>
     <td>
       {#if !filesExist && !fileIsLoading}
-        <input name="file" type="file" accept=".pdf" bind:files />
+        <input
+          name="file"
+          type="file"
+          accept=".pdf"
+          bind:files
+          on:change={toggle_files} />
       {:else if fileIsLoading}
         <p>Cargando...</p>
       {:else if filesExist}

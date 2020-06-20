@@ -30,7 +30,7 @@
 
   async function handle_upload_file(e) {
     toggle_load();
-    upload_file(files[0], newName);
+    upload_file(files[0], newName, obra.id);
     filesExist = true;
     toggle_load();
   }
