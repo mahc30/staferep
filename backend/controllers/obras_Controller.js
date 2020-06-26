@@ -52,12 +52,30 @@ exports.find_id = async function (req, res) {
 
 /* GET download */
 exports.download = async function (req, res) {
+    console.log(req.params.obra_id);
+    let files = await File.find({ "parent_id": req.params.obra_id });
+    let file_model = files[0];
+    if(files.length === 0){
+        console.log("FILE NOT FOUND");
+        res.sendStatus(400);
+        return;
+    };
 
+    let file_buffer = file_model.data.buffer
+    let file_name = file_model.name;
+    let file_type = file_model.content_type;
+    console.log("Downloading", file_model.name, "Buffer", file_buffer);
+    let download = Buffer.from(file_buffer, 'base64');
+
+    res.writeHead(200, {
+        'Content-Disposition': `attachment; filename="${file_name}"`,
+        'Content-Type': 'application/pdf',
+    });
+    res.end(download);
+    /*
     try {
         let obra = await Obra.findById(req.params.obra_id);
-
         if (obra && obra.file_exists) {
-            let download_path = path.join(__dirname, "..", "repertorio", `${obra.name}.pdf`);
             res.status(200).download(download_path);
         }
         else res.sendStatus(204);
@@ -66,7 +84,7 @@ exports.download = async function (req, res) {
         console.log("Download Error: ", err);
         res.sendStatus(500);
     }
-
+    */
 };
 
 // TODO Handle Get by Filters
@@ -97,11 +115,11 @@ exports.new_obra = async function (req, res) {
 
 /* DELETE obras by id. */
 exports.delete_obra = async function (req, res) {
-    console.log("Deleting", req.body);
     try {
-        const obra = await Obra.findByIdAndDelete(req.body.obra_id);
+        await Obra.findByIdAndDelete(req.body.obra_id);
+        await File.findOneAndRemove({"parent_id": req.body.obra_id}) 
         logger.new_Log(req.method, req.baseUrl, true);
-        res.status(200).send(obra);
+        res.status(200);
 
     } catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);
@@ -114,11 +132,8 @@ exports.delete_obra = async function (req, res) {
 exports.patch_obra = async function (req, res) {
     let id = req.body.obra_id;
     delete req.body.obra_id;
-    console.log("REQ . BODY", req.body);
     try {
         let new_obra = await Obra.findOneAndUpdate({ _id: id }, req.body);
-
-        console.log("FUCK THE POLICE: ", new_obra);
         logger.new_Log(req.method, req.baseUrl, true)
         res.status(200).send(new_obra);
 
@@ -151,21 +166,21 @@ exports.upload = async function (req, res) {
     and will save everything locally, it's necesary to add
     an external data storage so files can persist between containers */
     if (!req.file) { //This means multer had an error
-        res.status(500).send("Error guardando archivo.Multer");
+        console.log("Error guardando archivo.Multer")
+        res.status(500);
         return;
     }
     const file_path = req.file.path;
     const file_name = req.file.filename;
     const file = fs.readFileSync(file_path);
     const obra_id = req.params.obra_id;
-
-    const mongo_file = new File({
+    const file_model = new File({
         name: file_name,
         parent_id: ObjectId(obra_id),
         data: file,
-        content_type: "document/pdf",
+        content_type: "application/pdf",
     })
 
-    mongo_file.save()
+    file_model.save()
     res.send(200);
 }   

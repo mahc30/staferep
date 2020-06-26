@@ -17,7 +17,7 @@
   let files = []; //svelte requires this var name
   let newLevel = levels.find(newLevel => newLevel.text === obra.level);
   let fileIsLoading = false;
-  let filesExist = obra.file_exist || false;
+  let filesExist = obra.file_exists || false;
   let isValidInput = false;
 
   function validate_input(e) {
