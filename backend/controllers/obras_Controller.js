@@ -119,7 +119,7 @@ exports.delete_obra = async function (req, res) {
         await Obra.findByIdAndDelete(req.body.obra_id);
         await File.findOneAndRemove({"parent_id": req.body.obra_id}) 
         logger.new_Log(req.method, req.baseUrl, true);
-        res.status(200);
+        res.sendStatus(200);
 
     } catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);

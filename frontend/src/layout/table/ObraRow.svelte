@@ -4,7 +4,7 @@
 
   export let obra;
   export let IS_AUTH;
-  export let i;
+  export let i; //Row position to calculate the different color of background
 
   async function handle_Delete_Element(e) {
     let id = e.target.id;
@@ -16,9 +16,11 @@
           "Content-type": "application/json"
         },
         body: JSON.stringify({ obra_id: id })
-      });
-
-      if (delete_req.ok) dispatch("ObraDeleted");
+      })
+      .then(res => {
+        if (res.ok) dispatch("ObraDeleted");
+      })
+      
 
       /* TODO Reimplement This but prettier
       let new_rows = util.delete_at_index(rows, id);

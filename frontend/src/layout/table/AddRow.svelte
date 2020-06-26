@@ -59,7 +59,6 @@
   }
 
   async function handle_Add_Element(e) {
-    filesExist = true;
     let new_obra = {
       obra_name: newName,
       obra_composer: newComposer,
@@ -72,14 +71,10 @@
       headers: {
         "Content-Type": "application/json"
       },
-      data: {
-        file: "And this is where i'd put my File ... IF I HAD ONE"
-      },
       body: JSON.stringify(new_obra)
     })
       .then(res => res.json())
       .then(saved_obra => {
-        console.log("files", filesExist, "obra", saved_obra);
         if (filesExist) handle_upload_file(saved_obra._id);
         dispatch("obraAdded", {});
         reset_component();
