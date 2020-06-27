@@ -66,7 +66,7 @@
       file_exists: filesExist //TODO implement upload files
     };
 
-    fetch("http://localhost:3000/obras/add", {
+    fetch(`http://${process.env.API}/obras/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

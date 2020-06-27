@@ -10,7 +10,7 @@
     let id = e.target.id;
 
     try {
-      let delete_req = await fetch("http://localhost:3000/obras/delete", {
+      let delete_req = await fetch(`http://${process.env.API}/obras/delete`, {
         method: "DELETE",
         headers: {
           "Content-type": "application/json"

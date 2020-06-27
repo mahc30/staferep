@@ -47,7 +47,7 @@
     //Doing it this way because docs do it this way, don't really know if it's better, it's just a little bit hard to read
     const unnecesary_variable_name_but_basically_is_the_promise_for_svelte_to_load_fetch_data_READ_API = (async () => {
       //I'm sorry for what you're about to see //TODO MAKE A FCKING FETCH FUNCTION AAAA
-      let url = "http://localhost:3000/obras/findall";
+      let url = `http://${process.env.API}/obras/findall`;
       let options = {
         method: "GET",
         headers: {
@@ -59,7 +59,7 @@
         let filters = JSON.stringify(e.detail);
         options.method = "POST"; //Because GET method cannot have body
         options.body = filters; //Add filters for query if it exists
-        url = "http://localhost:3000/obras/findFilter"; //And the API is different
+        url = `http://${process.env.API}/obras/findFilter`; //And the API is different
         //God this turned ugly so fast i need a request generator
         //TODO ^
       }

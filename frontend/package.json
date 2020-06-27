@@ -5,11 +5,12 @@
     "build": "rollup -c",
     "dev": "rollup -c -w && sirv public --single",
     "start": "sirv public --single",
-	"deploy": "sirv public --single --host 0.0.0.0"
+    "deploy": "sirv public --single --host 0.0.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "^7.0.0",
+    "@rollup/plugin-replace": "^2.3.3",
     "rollup": "^1.20.0",
     "rollup-plugin-css-only": "^2.0.0",
     "rollup-plugin-livereload": "^1.0.0",

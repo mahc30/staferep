@@ -51,7 +51,7 @@
     };
 
     try {
-      let edit = await fetch("http://localhost:3000/obras/update", {
+      let edit = await fetch(`http://${process.env.API}/obras/update`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json"
