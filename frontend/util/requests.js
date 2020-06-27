@@ -9,7 +9,7 @@ export async function upload_file(file, file_name, obra_id) {
     data.append("file", newFile);
 
     try {
-        await fetch(`http://localhost:3000/obras/upload/${obra_id}`, {
+        await fetch(`http://${process.env.API}/obras/upload/${obra_id}`, {
             method: "POST",
             body: data
         });

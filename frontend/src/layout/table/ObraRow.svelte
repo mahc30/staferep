@@ -40,12 +40,12 @@
     let id = e.target.id;
 
     let checkForDownload = await fetch(
-      `http://localhost:3000/obras/download/${id}`
+      `http://${process.env.API}/obras/download/${id}`
     );
 
     if (checkForDownload.ok)
       //Triggers Download
-      window.location = `http://localhost:3000/obras/download/${id}`;
+      window.location = `http://${process.env.API}/obras/download/${id}`;
     else alert("Error intentando descargar");
   }
 </script>

@@ -33,7 +33,7 @@
 
   onMount(async () => {
     //TODO Get Initial of composers to show
-    const res = await fetch(`http://localhost:3000/obras/findall`, {
+    const res = await fetch(`http://${process.env.API}/obras/findall`, {
       method: "GET",
       headers: { "Content-type": "application/json" }
     });
