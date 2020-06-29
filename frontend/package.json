@@ -5,7 +5,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w && sirv public --single",
     "start": "sirv public --single",
-    "deploy": "sirv public --single --host 0.0.0.0"
+    "deploy": "rollup -c -w && sirv public --single --host 0.0.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
