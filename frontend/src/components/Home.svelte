@@ -33,7 +33,7 @@
     <div class="column" />
     <div class="column text-center">
       <Link to="/table">
-        <button class="button button-outline">Buscar Partituras</button>
+        <button id="go_table" class="button button-outline">Buscar Partituras</button>
       </Link>
     </div>
     <div class="column" />

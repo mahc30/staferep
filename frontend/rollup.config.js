@@ -22,7 +22,7 @@ export default {
 			// 2 level deep object should be stringify
 			process: JSON.stringify({
 				env: {
-					API: "34.70.76.59:3000",
+					API: "localhost:3000",
 				}
 			}),
 		}),
