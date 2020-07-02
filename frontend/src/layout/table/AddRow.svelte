@@ -4,7 +4,6 @@
   //Maybe, maybe i'll come back one day and fix this, or not
 
   import { createEventDispatcher } from "svelte";
-  import { onMount } from "svelte";
   import { upload_file } from "../../../util/requests";
 
   let dispatch = createEventDispatcher();
@@ -19,7 +18,6 @@
   let newComposer = "";
   let new_level = levels[0];
   let files = []; //Different naming convention because svelte only works with this var
-  let fileIsLoading = false;
   let isAdding = false;
   let filesExist = false;
   let isValidInput = false;
@@ -29,23 +27,17 @@
   }
 
   function reset_component() {
-    isAdding = false;
+    files = [];
+    filesExist = false;
     newName = "";
     newComposer = "";
-    files = [];
     new_level = levels[0];
-    isAdding = false;
-    fileIsLoading = false;
-    filesExist = false;
     isValidInput = false;
+    isAdding = false;
   }
 
   function toggle_add() {
     isAdding = !isAdding;
-  }
-
-  function toggle_load() {
-    fileIsLoading = !fileIsLoading;
   }
 
   function toggle_files() {
@@ -53,9 +45,7 @@
   }
 
   async function handle_upload_file(id) {
-    toggle_load();
     await upload_file(files[0], newName, id);
-    toggle_load();
   }
 
   async function handle_Add_Element(e) {
@@ -145,15 +135,13 @@
       </div>
     </td>
     <td>
-      {#if !filesExist && !fileIsLoading}
+      {#if !filesExist}
         <input
           name="file"
           type="file"
           accept=".pdf"
           bind:files
           on:change={toggle_files} />
-      {:else if fileIsLoading}
-        <p>Cargando...</p>
       {:else if filesExist}
         <p>Archivos Cargados! :)</p>
       {:else}
