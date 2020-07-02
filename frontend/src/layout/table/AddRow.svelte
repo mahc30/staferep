@@ -72,7 +72,6 @@
       .catch(err => {
         console.log(err);
       });
-      reset_component(); //Just in case because webscrapper is messing up  
   }
 </script>
 

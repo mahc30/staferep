@@ -66,9 +66,18 @@ open_table_button.click()
 
 sleep_counter = 0
 for name, pdf in obras.items():
-    time.sleep(0.5) #Because if it goes to fast it fails apparently -_-
-    add_obra_button = WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button.svelte-wr7rv1")))
-    add_obra_button.click()
+    try:
+        add_obra_button = WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button.svelte-wr7rv1")))
+    except err:
+        print("Error add obra click, trying again")
+        add_obra_button = WebDriverWait(browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button.svelte-wr7rv1")))
+
+    try:
+        add_obra_button.click()
+    except err:
+        print("Error add obra click, trying again")
+        add_obra_button.click()
+    
     time.sleep(0.5) #Because if it goes to fast it fails apparently -_-
 
     #Have to reassign it every iteration, it breaks otherwise, cuz ObJeCts Ar NOt In DoM anYmoRE
@@ -92,14 +101,10 @@ for name, pdf in obras.items():
     submit_button = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.svelte-wr7rv1")))
     submit_button.click()
 
-    #Sleep counter makes the program wait every 10 files uploaded because my connection is not that good
     #so the program will try to upload a ton of files in seconds and bandwidth can't keep up
     #eventually mongo throws a connection timeout and driver fails
-    #hopefully a 25 seconds sleep every 15 files should fix this
-    sleep_counter += 1
-    if(sleep_counter == 15):
-        sleep_counter = 0
-        time.sleep(25)
+    #hopefully a 5 seconds sleep will fix it
+    time.sleep(5)
     
 
 browser.quit()
