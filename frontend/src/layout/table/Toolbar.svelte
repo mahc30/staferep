@@ -3,34 +3,9 @@
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
 
-  const dispatch = createEventDispatcher();
-  let filters = {};
-  //Handle Select Level
-  let levels = [
-    { id: -1, text: `Nivel` },
-    { id: 0, text: `Presemillero` },
-    { id: 1, text: `Semillero` },
-    { id: 2, text: `Preorquesta` },
-    { id: 3, text: `Orquesta` }
-  ];
-  let level = levels[0];
-  //Handle Composer Input
-  var composers = ["Compositor"];
-  var composer = composers[0]; //Initial Value, it should never be unassigned
-
-  function handleSubmit() {
-    //Parse Input
-    let data = {};
-    let is_level = level.id != -1;
-    let is_composer = composer != "Compositor" || false;
-
-    if (is_level) data.level = level.text;
-    if (is_composer) data.composer = composer;
-    if (is_level || is_composer) dispatch("changedParams", data);
-    //If there is any data to send, do it
-    else dispatch("changedParams");
-  }
-
+  //Initialize Components
+  export let IS_AUTH;
+  export let obras = {};
   onMount(async () => {
     //TODO Get Initial of composers to show
     const res = await fetch(`http://localhost:3000/obras/findall`, {
@@ -42,11 +17,64 @@
     let composer_list = await res.json();
     let new_composers = [];
 
+    levels = [
+      { id: -1, text: `Nivel` },
+      { id: 0, text: `Presemillero` },
+      { id: 1, text: `Semillero` },
+      { id: 2, text: `Preorquesta` },
+      { id: 3, text: `Orquesta` }
+    ];
+    level = levels[0];
+
     composer_list.forEach(element => {
       new_composers = [...new_composers, element.composer];
       composers = [composers[0], ...new Set(new_composers)]; //Apparently ...new SET returns a new array without duplicates :o
     });
+    composer = composers[0]; //Initial Value
   });
+
+  const dispatch = createEventDispatcher();
+
+  /*
+    ///////////////////////////////////////////////////////////////
+
+    First everything related to the SearchAndRequest™ of new 
+    parametized information
+
+    ///////////////////////////////////////////////////////////////    
+  */
+
+  //Handle Select Level
+  let levels = [];
+  let level = {};
+
+  //Handle Composer Input
+  export let composers = ["Compositor"];
+  let composer;
+
+  function handleSubmit() {
+    //Parse Input
+    let filters = {};
+    let is_level = level.id != -1;
+    let is_composer = composer != "Compositor" || false;
+
+    if (is_level) filters.level = level.text;
+    if (is_composer) filters.composer = composer;
+
+    //If there is changes, send request
+    if (is_level || is_composer) dispatch("changedParams", filters);
+  }
+
+  function handle_Download_Element(e) {}
+
+  function handle_Delete_Element() {}
+  /*
+    ///////////////////////////////////////////////////////////////
+
+    Then everything related to the LogicHandling™ of CRUD operations
+
+    ///////////////////////////////////////////////////////////////    
+  */
 </script>
 
 <style>
@@ -62,11 +90,6 @@
     top: 8px;
   }
 
-  hr {
-    border-top: 0.1rem solid black !important; /* hr tag is white for default, have to override it */
-    margin: 0 0 4px 0 !important;
-  }
-  
   button {
     background-color: #ed1c23 !important;
     border: #ed1c23;
@@ -85,6 +108,10 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+  }
+
+  .table-buttons{
+    max-width: 50%;
   }
 </style>
 
@@ -116,5 +143,30 @@
       </button>
     </div>
   </div>
+
+  <!--- Table operations -->
+  {#if IS_AUTH}
+    <div class="row table-buttons">
+      <div class="column">
+        <button id={obras.id}>Editar</button>
+      </div>
+
+      <div class="column">
+        <button
+          id={obras.id}
+          on:click={handle_Download_Element}
+          disabled={!obras.file_exists}>
+          Descargar
+        </button>
+      </div>
+
+      <div class="column">
+        <button
+          on:click={handle_Delete_Element}
+          disabled={true}>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  {/if}
 </div>
-<hr />

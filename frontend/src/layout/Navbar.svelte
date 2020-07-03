@@ -23,6 +23,7 @@
     max-width: 48px;
     max-height: 48px;
   }
+
 </style>
 
 <nav class="navigation" on:click={toggleAuth}>

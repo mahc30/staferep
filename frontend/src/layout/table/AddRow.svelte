@@ -15,6 +15,7 @@
     { id: 2, text: `Preorquesta` },
     { id: 3, text: `Orquesta` }
   ];
+
   let newName = "";
   let newComposer = "";
   let new_level = levels[0];
@@ -64,7 +65,7 @@
       obra_name: newName,
       obra_composer: newComposer,
       obra_level: new_level.text,
-      file_exists: filesExist //TODO implement upload files
+      file_exists: filesExist
     };
 
     fetch("http://localhost:3000/obras/add", {
@@ -79,7 +80,6 @@
     })
       .then(res => res.json())
       .then(saved_obra => {
-        console.log("files", filesExist, "obra", saved_obra);
         if (filesExist) handle_upload_file(saved_obra._id);
         dispatch("obraAdded", {});
         reset_component();
@@ -174,12 +174,8 @@
 {:else}
   <tr>
     <!--- Aditional TD are for centering the Button, easier than css i guess -->
-    <td />
-    <td />
     <td>
       <button on:click={toggle_add}>Nueva Obra</button>
     </td>
-    <td />
-    <td />
   </tr>
 {/if}
