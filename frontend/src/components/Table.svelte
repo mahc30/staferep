@@ -12,28 +12,12 @@
   let rows = [];
 
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
-  let is_editing = -1;
+  let is_editing = [{ id: -1 }];
   let selected = [];
   //For initial state
   onMount(async () => {
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
-
-    let req = await fetch_obra_list({}); //Function receives an event, passing an empty object does the trick
-    let obras;
-
-    if (!req) {
-      obras = {
-        headers: [{ title: "Obra" }, { title: "Compositor" }],
-        rows: [
-          { id: "idtest1", name: "Despacito", composer: "Mozart" },
-          { id: "idtest2", name: "Adagio en Re menor", composer: "Pitbull" }
-        ]
-      };
-    } else {
-      obras = req;
-    }
-
-    handle_Update_Table(obras);
+    await handle_Fetch({}); //Function receives an event, passing an empty object does the trick
   });
 
   async function handle_Update_Table(list) {
@@ -42,54 +26,57 @@
   }
 
   async function handle_Edit_Element(e) {
-    if (e.detail) is_editing = e.detail.id;
+    if (e.detail.new_edit) is_editing = [...is_editing, e.detail.obra];
     //Edit Obra Event
     else {
       //Obra Edited Event
-      is_editing = -1;
-      try {
-        await handle_fetch({});
-      } catch (err) {
-        console.log(err);
-      }
+      is_editing = util.find_and_delete(is_editing, e.detail.id);
+      if (is_editing.length <= 1) await handle_Fetch({});
     }
   }
 
   function handle_New_Select(e) {
     let checked = e.detail.checked;
-    let id = e.detail.id;
+    let obra = e.detail.obra;
 
     checked
-      ? (selected = [...selected, id])
-      : (selected = util.find_and_delete(selected, id));
+      ? (selected = [...selected, obra])
+      : (selected = util.find_and_delete(selected, obra));
   }
 
-  async function handle_Delete_Element() {
-    selected.forEach(async id => {
-      await delete_element(id);
-    });
+  async function handle_Fetch(e) {
+    let obras;
+    let filters = e.detail || e;
+    try {
+      obras = await fetch_obra_list(filters);
+    } catch {
+      obras = {
+        headers: [{ title: "Obra" }, { title: "Compositor" }],
+        rows: [
+          { id: "idtest1", name: "Despacito", composer: "Mozart" },
+          { id: "idtest2", name: "Adagio en Re menor", composer: "Pitbull" }
+        ]
+      };
+    } finally {
+      handle_Update_Table(obras);
+    }
   }
 
-  async function handle_fetch(e) {
-    handle_Update_Table({});
+  async function handle_Delete_Element(e) {
+    await delete_element(e.detail);
+    handle_Fetch({});
   }
 </script>
 
 <style>
   /* TODO Apparently this doesn't work in mobile, gotta fix the css */
 
-  table {
-    width: 100%;
-    max-height: 60vh;
-    overflow: scroll;
-  }
-
-  thead {
+  th {
     text-align: center;
     color: #999999;
   }
 
-  hr{
+  hr {
     border-bottom: solid black 1px;
   }
 </style>
@@ -97,11 +84,16 @@
 <!-- Toolbar -->
 <div class="container">
   <div class="row">
-    <Toolbar {IS_AUTH} on:changedParams={handle_fetch} />
+    <Toolbar
+      {IS_AUTH}
+      {selected}
+      on:newSearch={handle_Fetch}
+      on:obraEdit={handle_Edit_Element}
+      on:obraDelete={handle_Delete_Element} />
   </div>
 </div>
 <!-- Probably the Table -->
-<hr>
+<hr />
 <table>
   <thead>
     <tr>
@@ -112,12 +104,11 @@
       {#each headers as head}
         <th>{head.title}</th>
       {/each}
-      <th />
     </tr>
   </thead>
   <tbody>
     {#each rows as row, i}
-      {#if row.id === is_editing}
+      {#if util.array_contains(is_editing, row.id)}
         <EditRow obra={row} on:ObraEdited={handle_Edit_Element} />
       {:else}
         <ObraRow
@@ -125,13 +116,18 @@
           {IS_AUTH}
           {i}
           on:editObra={handle_Edit_Element}
-          on:ObraDeleted={handle_fetch}
+          on:ObraDeleted={() => {
+            handle_Fetch;
+          }}
           on:newSelect={handle_New_Select} />
       {/if}
     {/each}
 
     {#if IS_AUTH}
-      <AddRow on:obraAdded={handle_fetch} />
+      <AddRow
+        on:obraAdded={() => {
+          handle_Fetch;
+        }} />
     {/if}
   </tbody>
 </table>

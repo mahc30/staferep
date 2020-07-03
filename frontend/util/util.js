@@ -1,7 +1,12 @@
 exports.find_and_delete = function (array, id) {
-    var index = array.findIndex(obj => { return obj === id });
+    var index = array.findIndex(obj => { return obj.id === id });
     array.splice(index, 1);
     return array;
+}
+
+exports.array_contains = function(array, id){
+    let filter = array.filter(obj => {return obj.id === id});
+    return filter.length > 0
 }
 
 exports.format_obras_data = function(req){

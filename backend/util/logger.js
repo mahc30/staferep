@@ -31,7 +31,6 @@ function format_Log(log) {
 function create_Log(log_message) {
     try {
         fs.appendFileSync(LOG_PATH, log_message, { encoding: 'utf-8' });
-        console.log("log created");
         return;
     }
     catch{

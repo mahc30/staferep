@@ -5,7 +5,7 @@
 
   //Initialize Components
   export let IS_AUTH;
-  export let obras = {};
+  export let selected = [];
   onMount(async () => {
     //TODO Get Initial of composers to show
     const res = await fetch(`http://localhost:3000/obras/findall`, {
@@ -61,13 +61,9 @@
     if (is_level) filters.level = level.text;
     if (is_composer) filters.composer = composer;
 
-    //If there is changes, send request
-    if (is_level || is_composer) dispatch("changedParams", filters);
+    dispatch("newSearch", filters);
   }
 
-  function handle_Download_Element(e) {}
-
-  function handle_Delete_Element() {}
   /*
     ///////////////////////////////////////////////////////////////
 
@@ -75,6 +71,23 @@
 
     ///////////////////////////////////////////////////////////////    
   */
+  function trigger_download_event(e) {}
+
+  function trigger_Edit_Event() {
+    selected.forEach(obra => {
+      dispatch("obraEdit", { obra: obra, new_edit: true });
+    });
+
+    selected = [];
+  }
+
+  function trigger_Delete_Event() {
+    selected.forEach(obra => {
+      dispatch("obraDelete", obra.id);
+    });
+
+    selected = [];
+  }
 </script>
 
 <style>
@@ -110,7 +123,18 @@
                                   supported by Chrome, Edge, Opera and Firefox */
   }
 
-  .table-buttons{
+  button:disabled {
+    background-color: gray;
+    border: 0.1rem solid gray !important;
+    color: white;
+  }
+
+  button:disabled:hover {
+    background-color: gray;
+    border: 0.1rem solid gray !important;
+    color: white;
+  }
+  .table-buttons {
     max-width: 50%;
   }
 </style>
@@ -148,22 +172,27 @@
   {#if IS_AUTH}
     <div class="row table-buttons">
       <div class="column">
-        <button id={obras.id}>Editar</button>
+        <button
+          id=""
+          disabled={selected.length === 0}
+          on:click={trigger_Edit_Event}>
+          Editar
+        </button>
       </div>
 
       <div class="column">
         <button
-          id={obras.id}
-          on:click={handle_Download_Element}
-          disabled={!obras.file_exists}>
+          id={selected}
+          on:click={trigger_download_event}
+          disabled={!(selected.length === 1)}>
           Descargar
         </button>
       </div>
 
       <div class="column">
         <button
-          on:click={handle_Delete_Element}
-          disabled={true}>
+          on:click={trigger_Delete_Event}
+          disabled={selected.length === 0}>
           Eliminar
         </button>
       </div>

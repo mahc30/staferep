@@ -11,7 +11,7 @@
   }
 
   function trigger_select_event(e) {
-    dispatch("newSelect", { id: e.target.id, checked: e.target.checked });
+    dispatch("newSelect", { obra: obra, checked: e.target.checked });
   }
 
   async function handle_Download_Element(e) {
@@ -29,7 +29,7 @@
 </script>
 
 <style>
-  td {
+  td, tr{
     text-align: center;
     color: black;
   }
@@ -46,32 +46,10 @@
     background-color: #7e7e7e;
   }
 
-  button {
-    background-color: #ed1c23;
-    border: 0.1rem solid #ed1c23;
-  }
 
-  button:hover {
-    background-color: #b20000;
-  }
-
-  button:disabled {
-    background-color: gray;
-    border: 0.1rem solid gray !important;
-    color: white;
-  }
-
-  button:disabled:hover {
-    background-color: gray;
-    border: 0.1rem solid gray !important;
-    color: white;
-  }
 </style>
 
 <tr class:highlight={i % 2 === 0} class="table_body_row">
-  <!-- buttons for CRUD  
-            For Admins and Normal Users
-          -->
   {#if IS_AUTH}
     <td>
       <input
@@ -83,19 +61,4 @@
   {/if}
   <td>{obra.name}</td>
   <td>{obra.composer}</td>
-
-  <!--- TODO find a way to move this like i did with eliminar button, i need a designer bro :( -->
-  {#if IS_AUTH}
-    <td>
-      <button id={obra.id} on:click={trigger_edit_event}>Editar</button>
-    </td>
-    <td>
-      <button
-        id={obra.id}
-        on:click={handle_Download_Element}
-        disabled={!obra.file_exists}>
-        Descargar
-      </button>
-    </td>
-  {/if}
 </tr>

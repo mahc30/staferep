@@ -60,7 +60,7 @@
       });
 
       if (edit.ok) {
-        dispatch("ObraEdited");
+        dispatch("ObraEdited", {new_edit: false, id: obra.id});
       }
     } catch (error) {
       console.log("Error Editando Obra", error);

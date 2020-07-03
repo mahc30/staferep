@@ -170,10 +170,12 @@
         Agregar
       </button>
     </td>
+    <td/>
   </tr>
 {:else}
   <tr>
     <!--- Aditional TD are for centering the Button, easier than css i guess -->
+    <td/>
     <td>
       <button on:click={toggle_add}>Nueva Obra</button>
     </td>
