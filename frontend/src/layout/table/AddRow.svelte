@@ -91,15 +91,10 @@
 </script>
 
 <style>
-  td {
-    text-align: center;
-    padding: 0 0 0 auto;
-    color: black;
-  }
-
   button {
+    text-align: center;
     background-color: #ed1c23;
-    margin: 0 2px 0 2px;
+    margin: 0 auto 0 auto;
     border: 0.1rem solid #ed1c23;
   }
 
@@ -121,6 +116,11 @@
 
   .pl-4 {
     padding-left: 4%;
+  }
+
+  .add-button-container {
+    margin: 0 auto 0 auto;
+    text-align: center;
   }
 </style>
 
@@ -170,14 +170,10 @@
         Agregar
       </button>
     </td>
-    <td/>
+    <td />
   </tr>
 {:else}
-  <tr>
-    <!--- Aditional TD are for centering the Button, easier than css i guess -->
-    <td/>
-    <td>
-      <button on:click={toggle_add}>Nueva Obra</button>
-    </td>
-  </tr>
+  <div class="add-button-container">
+    <button on:click={toggle_add}>Nueva Obra</button>
+  </div>
 {/if}

@@ -10,7 +10,7 @@ exports.array_contains = function (array, id) {
 }
 
 exports.format_obras_data = function (req) {
-    let headers = [{ title: "Obra" }, { title: "Compositor" }, { title: "" }, { title: "" }, { title: "" }]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
+    let headers = [{ title: "Obra" }, { title: "Compositor" }]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
     let rows = [];
     let data = {};
 

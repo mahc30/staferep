@@ -78,8 +78,8 @@
   }
 
   async function handle_Download_Element(e) {
-    let id = e.detail.obra.id
-    console.log("download: ", e.detail.obra)
+    let id = e.detail.obra.id;
+    console.log("download: ", e.detail.obra);
     let checkForDownload = await fetch(
       `http://localhost:3000/obras/download/${id}`
     );
@@ -94,19 +94,35 @@
 <style>
   /* TODO Apparently this doesn't work in mobile, gotta fix the css */
 
+  .table-container {
+    overflow-y: scroll;
+  }
+
   th {
     text-align: center;
     color: #999999;
   }
 
-  hr {
-    border-bottom: solid black 1px;
+  .component-container {
+    display: flex;
+    flex-flow: column;
+    height: 90vh;
+    max-height: calc(90vh - 2px);
+    overflow: hidden;
+  }
+
+  .toolbar-container{
+    max-height: 20vh;
+  }
+
+  .table-container{
+    max-height: calc(80vh - 2px);
   }
 </style>
 
 <!-- Toolbar -->
-<div class="container">
-  <div class="row">
+<div class="component-container">
+  <div class="toolbar-container">
     <Toolbar
       {IS_AUTH}
       {selected}
@@ -114,48 +130,48 @@
       on:newSearch={handle_Fetch}
       on:obraEdit={handle_Edit_Element}
       on:obraDelete={handle_Delete_Element}
-      on:obraDownload = {handle_Download_Element} />
+      on:obraDownload={handle_Download_Element} />
+  </div>
+  <!-- Probably the Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          {#each headers as header}
+            <th>{header.title}</th>
+          {/each}
+
+          {#if IS_AUTH}
+            <th />
+          {/if}
+        </tr>
+      </thead>
+      <tbody>
+        {#each rows as row, i}
+          {#if util.array_contains(is_editing, row.id)}
+            <EditRow
+              obra={row}
+              on:ObraEdited={handle_Edit_Element}
+              on:cancelEdit={handle_Edit_Element} />
+          {:else}
+            <ObraRow
+              obra={row}
+              {i}
+              on:editObra={handle_Edit_Element}
+              on:ObraDeleted={() => {
+                handle_Fetch;
+              }}
+              on:newSelect={handle_New_Select} />
+          {/if}
+        {/each}
+
+        {#if IS_AUTH}
+          <AddRow
+            on:obraAdded={() => {
+              handle_Fetch;
+            }} />
+        {/if}
+      </tbody>
+    </table>
   </div>
 </div>
-<!-- Probably the Table -->
-<hr />
-<table>
-  <thead>
-    <tr>
-      {#if IS_AUTH}
-        <th />
-      {/if}
-
-      {#each headers as head}
-        <th>{head.title}</th>
-      {/each}
-    </tr>
-  </thead>
-  <tbody>
-    {#each rows as row, i}
-      {#if util.array_contains(is_editing, row.id)}
-        <EditRow
-          obra={row}
-          on:ObraEdited={handle_Edit_Element}
-          on:cancelEdit={handle_Edit_Element} />
-      {:else}
-        <ObraRow
-          obra={row}
-          {IS_AUTH}
-          {i}
-          on:editObra={handle_Edit_Element}
-          on:ObraDeleted={() => {
-            handle_Fetch;
-          }}
-          on:newSelect={handle_New_Select} />
-      {/if}
-    {/each}
-
-    {#if IS_AUTH}
-      <AddRow
-        on:obraAdded={() => {
-          handle_Fetch;
-        }} />
-    {/if}
-  </tbody>
-</table>

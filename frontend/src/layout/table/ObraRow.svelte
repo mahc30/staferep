@@ -3,7 +3,6 @@
   let dispatch = createEventDispatcher();
 
   export let obra;
-  export let IS_AUTH;
   export let i;
 
   function trigger_edit_event(e) {
@@ -16,7 +15,8 @@
 </script>
 
 <style>
-  td, tr{
+  td,
+  tr {
     text-align: center;
     color: black;
   }
@@ -32,20 +32,16 @@
   .highlight.table_body_row:hover {
     background-color: #7e7e7e;
   }
-
-
 </style>
 
 <tr class:highlight={i % 2 === 0} class="table_body_row">
-  {#if IS_AUTH}
-    <td>
-      <input
-        id={obra.id}
-        type="checkbox"
-        name="select_row"
-        on:change={trigger_select_event} />
-    </td>
-  {/if}
   <td>{obra.name}</td>
   <td>{obra.composer}</td>
+  <td>
+    <input
+      id={obra.id}
+      type="checkbox"
+      name="select_row"
+      on:change={trigger_select_event} />
+  </td>
 </tr>
