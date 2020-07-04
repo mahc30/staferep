@@ -4,13 +4,13 @@ exports.find_and_delete = function (array, id) {
     return array;
 }
 
-exports.array_contains = function(array, id){
-    let filter = array.filter(obj => {return obj.id === id});
+exports.array_contains = function (array, id) {
+    let filter = array.filter(obj => { return obj.id === id });
     return filter.length > 0
 }
 
-exports.format_obras_data = function(req){
-    let headers = [{title: "Obra"}, {title: "Compositor"}, {title:""}, {title:""}, {title:""}]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
+exports.format_obras_data = function (req) {
+    let headers = [{ title: "Obra" }, { title: "Compositor" }, { title: "" }, { title: "" }, { title: "" }]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
     let rows = [];
     let data = {};
 
@@ -23,15 +23,27 @@ exports.format_obras_data = function(req){
             level: element.level
         }
 
-        rows = [...rows, obra];    
+        rows = [...rows, obra];
     });
 
-    data = {headers: headers, rows: rows};
+    data = { headers: headers, rows: rows };
     return data;
 }
 
-exports.format_file_name = function (file_name, new_name){
+exports.format_file_name = function (file_name, new_name) {
     let new_file_name = file_name.split("."); //Split name by . to get [name, extension]
     new_file_name[0] = new_name;
     return new_file_name.join(".");
+}
+
+exports.filter_composer = function (array) {
+    let composers = []
+    let new_array = [];
+
+    array.forEach(element => {
+        composers = [...composers, element.composer];
+    });
+
+    new_array = ["Compositor", ...new Set(composers)]; //Apparently ...new SET returns a new array without duplicates :o
+    return new_array
 }

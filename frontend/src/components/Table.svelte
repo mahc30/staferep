@@ -14,6 +14,7 @@
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
   let is_editing = [{ id: -1 }];
   let selected = [];
+  let composers = ["Compositor"];
   //For initial state
   onMount(async () => {
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
@@ -21,18 +22,27 @@
   });
 
   async function handle_Update_Table(list) {
+    composers = util.filter_composer(list.rows);
+
     headers = list.headers || headers;
     rows = list.rows || rows;
   }
 
   async function handle_Edit_Element(e) {
-    if (e.detail.new_edit) is_editing = [...is_editing, e.detail.obra];
+    //Cancel Event
+    if (e.detail.cancel) {
+      is_editing = util.find_and_delete(is_editing, e.detail.obra.id);
+      selected = util.find_and_delete(selected, e.detail.obra);
+    }
     //Edit Obra Event
+    else if (e.detail.new_edit) is_editing = [...is_editing, e.detail.obra];
     else {
       //Obra Edited Event
-      is_editing = util.find_and_delete(is_editing, e.detail.id);
-      if (is_editing.length <= 1) await handle_Fetch({});
+      is_editing = util.find_and_delete(is_editing, e.detail.obra.id);
+      selected = util.find_and_delete(selected, e.detail.obra);
     }
+
+    if (is_editing.length <= 1) await handle_Fetch({});
   }
 
   function handle_New_Select(e) {
@@ -87,6 +97,7 @@
     <Toolbar
       {IS_AUTH}
       {selected}
+      {composers}
       on:newSearch={handle_Fetch}
       on:obraEdit={handle_Edit_Element}
       on:obraDelete={handle_Delete_Element} />
@@ -109,7 +120,10 @@
   <tbody>
     {#each rows as row, i}
       {#if util.array_contains(is_editing, row.id)}
-        <EditRow obra={row} on:ObraEdited={handle_Edit_Element} />
+        <EditRow
+          obra={row}
+          on:ObraEdited={handle_Edit_Element}
+          on:cancelEdit={handle_Edit_Element} />
       {:else}
         <ObraRow
           obra={row}

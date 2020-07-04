@@ -28,13 +28,6 @@
       files[0];
   }
 
-  async function handle_upload_file(e) {
-    toggle_load();
-    upload_file(files[0], newName, obra.id);
-    filesExist = true;
-    toggle_load();
-  }
-
   function toggle_load() {
     fileIsLoading = !fileIsLoading;
   }
@@ -60,11 +53,26 @@
       });
 
       if (edit.ok) {
-        dispatch("ObraEdited", {new_edit: false, id: obra.id});
+        dispatch("ObraEdited", {
+          new_edit: false,
+          obra: new_obra,
+          cancel: false
+        });
       }
     } catch (error) {
       console.log("Error Editando Obra", error);
     }
+  }
+
+  async function handle_upload_file(e) {
+    toggle_load();
+    upload_file(files[0], newName, obra.id);
+    filesExist = true;
+    toggle_load();
+  }
+
+  function handle_cancel(e) {
+    dispatch("cancelEdit", { obra: obra, cancel: true });
   }
 </script>
 
@@ -126,17 +134,15 @@
         accept=".pdf"
         bind:files
         on:change={validate_input} />
-    {:else if fileIsLoading}
-      <p>Cargando...</p>
-    {:else if filesExist}
-      <p>Archivos Cargados! :)</p>
-    {:else}
-      <p>Error Cargando Archivo</p>
     {/if}
   </td>
   <td>
-    <button on:click={handle_edit_element} disabled={!isValidInput}>
-      Guardar Cambios
-    </button>
+
+    {#if isValidInput}
+      <button on:click={handle_edit_element}>Guardar Cambios</button>
+    {:else}
+      <button on:click={handle_cancel}>Cancelar</button>
+    {/if}
+
   </td>
 </tr>

@@ -2,20 +2,13 @@
   import AutoComplete from "simple-svelte-autocomplete";
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
+  const dispatch = createEventDispatcher();
 
   //Initialize Components
   export let IS_AUTH;
   export let selected = [];
-  onMount(async () => {
-    //TODO Get Initial of composers to show
-    const res = await fetch(`http://localhost:3000/obras/findall`, {
-      method: "GET",
-      headers: { "Content-type": "application/json" }
-    });
 
-    //Remember composers must be an Array of strings, cuz module requirements
-    let composer_list = await res.json();
-    let new_composers = [];
+  onMount(async () => {
 
     levels = [
       { id: -1, text: `Nivel` },
@@ -26,14 +19,8 @@
     ];
     level = levels[0];
 
-    composer_list.forEach(element => {
-      new_composers = [...new_composers, element.composer];
-      composers = [composers[0], ...new Set(new_composers)]; //Apparently ...new SET returns a new array without duplicates :o
-    });
     composer = composers[0]; //Initial Value
   });
-
-  const dispatch = createEventDispatcher();
 
   /*
     ///////////////////////////////////////////////////////////////
