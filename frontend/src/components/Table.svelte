@@ -76,6 +76,19 @@
     await delete_element(e.detail);
     handle_Fetch({});
   }
+
+  async function handle_Download_Element(e) {
+    let id = e.detail.obra.id
+    console.log("download: ", e.detail.obra)
+    let checkForDownload = await fetch(
+      `http://localhost:3000/obras/download/${id}`
+    );
+
+    if (checkForDownload.ok)
+      //Triggers Download
+      window.location = `http://localhost:3000/obras/download/${id}`;
+    else alert("Error intentando descargar");
+  }
 </script>
 
 <style>
@@ -100,7 +113,8 @@
       {composers}
       on:newSearch={handle_Fetch}
       on:obraEdit={handle_Edit_Element}
-      on:obraDelete={handle_Delete_Element} />
+      on:obraDelete={handle_Delete_Element}
+      on:obraDownload = {handle_Download_Element} />
   </div>
 </div>
 <!-- Probably the Table -->

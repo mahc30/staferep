@@ -13,19 +13,6 @@
   function trigger_select_event(e) {
     dispatch("newSelect", { obra: obra, checked: e.target.checked });
   }
-
-  async function handle_Download_Element(e) {
-    let id = e.target.id;
-
-    let checkForDownload = await fetch(
-      `http://localhost:3000/obras/download/${id}`
-    );
-
-    if (checkForDownload.ok)
-      //Triggers Download
-      window.location = `http://localhost:3000/obras/download/${id}`;
-    else alert("Error intentando descargar");
-  }
 </script>
 
 <style>

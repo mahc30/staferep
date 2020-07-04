@@ -58,7 +58,9 @@
 
     ///////////////////////////////////////////////////////////////    
   */
-  function trigger_download_event(e) {}
+  function trigger_Download_event(e) {
+    dispatch("obraDownload", {obra: selected[0]})
+  }
 
   function trigger_Edit_Event() {
     selected.forEach(obra => {
@@ -170,8 +172,8 @@
       <div class="column">
         <button
           id={selected}
-          on:click={trigger_download_event}
-          disabled={!(selected.length === 1)}>
+          on:click={trigger_Download_event}
+          disabled={!(selected.length === 1) || !selected[0].file_exists}>
           Descargar
         </button>
       </div>
