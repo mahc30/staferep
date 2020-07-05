@@ -19,32 +19,32 @@ export async function upload_file(file, file_name, obra_id) {
 }
 
 export async function delete_element(id) {
-    try {
-        let delete_req = await fetch("http://localhost:3000/obras/delete", {
-            method: "DELETE",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({ obra_id: id })
-        });
 
-        if (delete_req.ok) dispatch("ObraDeleted");
+    return new Promise(async(resolve, rejected) => {
+        try {
+            let delete_req = await fetch("http://localhost:3000/obras/delete", {
+                method: "DELETE",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({ obra_id: id })
+            });
 
-        /* TODO Reimplement This but prettier
-        let new_rows = util.find_and_delete(rows, id);
-        console.log(new_rows);
-        handle_Update_Table({ rows: new_rows });
-        */
-    } catch (error) {
-        console.log("Error Eliminando Obra", error);
-    }
+            if (delete_req.ok) {
+                resolve();
+            } else rejected("Error Eliminando Obra")
+        } catch (error) {
+            rejected("Error Eliminando Obra", error)
+        }
+    })
+
 }
 
 export async function fetch_obra_list(filters) {
     let url = "http://localhost:3000/obras/findall";
     let options = {
-        headers : { "Content-type": "application/json" },
-        method :"GET"
+        headers: { "Content-type": "application/json" },
+        method: "GET"
     };
 
     if (!(Object.keys(filters).length === 0 && filters.constructor === Object)) {
@@ -53,16 +53,13 @@ export async function fetch_obra_list(filters) {
         url = "http://localhost:3000/obras/findFilter"; //And the API is different
     }
 
-    return new Promise(async (resolve, reject) => {
-        try{
+    return new Promise(async(resolve, reject) => {
+        try {
             const response = await fetch(url, options);
             const raw_data = await response.json();
             let parsed_data = util.format_obras_data(raw_data);
-            resolve (parsed_data)
-        }
-        catch
-        {   
-            console.log("Error Fetching resources")
+            resolve(parsed_data)
+        } catch {
             reject()
         }
     });

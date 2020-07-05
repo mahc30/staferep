@@ -3,27 +3,32 @@
   import { delete_element, fetch_obra_list } from "../../util/requests";
   import util from "../../util/util";
 
-  import Toolbar from "../layout/table/Toolbar.svelte";
-  import EditRow from "../layout/table/EditRow.svelte";
-  import ObraRow from "../layout/table/ObraRow.svelte";
-  import AddRow from "../layout/table/AddRow.svelte";
-  //Initialize with default values :)
-  let headers = [];
-  let rows = [];
+  import Toolbar from "../layout/ObraView/Toolbar.svelte";
+  import Table from "../layout/ObraView/Table.svelte";
 
+  let obras = {};
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
   let is_editing = [{ id: -1 }];
   let selected = [];
   let composers = ["Compositor"];
-  //For initial state
+  let rows = [];
+  let headers = [];
+
   onMount(async () => {
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
     await handle_Fetch({}); //Function receives an event, passing an empty object does the trick
   });
 
-  async function handle_Update_Table(list) {
-    composers = util.filter_composer(list.rows);
+  function handle_Select(e) {
+    let checked = e.detail.checked;
+    let obra = e.detail.obra;
 
+    checked
+      ? (selected = [...selected, obra])
+      : (selected = util.find_and_delete(selected, obra));
+  }
+  
+  function handle_Update_Table(list) {
     headers = list.headers || headers;
     rows = list.rows || rows;
   }
@@ -45,21 +50,12 @@
     if (is_editing.length <= 1) await handle_Fetch({});
   }
 
-  function handle_New_Select(e) {
-    let checked = e.detail.checked;
-    let obra = e.detail.obra;
-
-    checked
-      ? (selected = [...selected, obra])
-      : (selected = util.find_and_delete(selected, obra));
-  }
-
   async function handle_Fetch(e) {
-    let obras;
     let filters = e.detail || e;
     try {
       obras = await fetch_obra_list(filters);
     } catch {
+      //Default values
       obras = {
         headers: [{ title: "Obra" }, { title: "Compositor" }],
         rows: [
@@ -74,12 +70,13 @@
 
   async function handle_Delete_Element(e) {
     await delete_element(e.detail);
+    selected = util.find_and_delete(selected, e.detail);
+    is_editing = util.find_and_delete(is_editing, e.detail);
     handle_Fetch({});
   }
 
   async function handle_Download_Element(e) {
     let id = e.detail.obra.id;
-    console.log("download: ", e.detail.obra);
     let checkForDownload = await fetch(
       `http://localhost:3000/obras/download/${id}`
     );
@@ -92,17 +89,6 @@
 </script>
 
 <style>
-  /* TODO Apparently this doesn't work in mobile, gotta fix the css */
-
-  .table-container {
-    overflow-y: scroll;
-  }
-
-  th {
-    text-align: center;
-    color: #999999;
-  }
-
   .component-container {
     display: flex;
     flex-flow: column;
@@ -110,68 +96,31 @@
     max-height: calc(90vh - 2px);
     overflow: hidden;
   }
-
-  .toolbar-container{
-    max-height: 20vh;
-  }
-
-  .table-container{
-    max-height: calc(80vh - 2px);
-  }
 </style>
 
-<!-- Toolbar -->
 <div class="component-container">
-  <div class="toolbar-container">
-    <Toolbar
-      {IS_AUTH}
-      {selected}
-      {composers}
-      on:newSearch={handle_Fetch}
-      on:obraEdit={handle_Edit_Element}
-      on:obraDelete={handle_Delete_Element}
-      on:obraDownload={handle_Download_Element} />
-  </div>
-  <!-- Probably the Table -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          {#each headers as header}
-            <th>{header.title}</th>
-          {/each}
+  <Toolbar
+    {IS_AUTH}
+    {selected}
+    {composers}
+    on:newSearch={handle_Fetch}
+    on:obraEdit={handle_Edit_Element}
+    on:obraDelete={handle_Delete_Element}
+    on:obraDownload={handle_Download_Element} />
 
-          {#if IS_AUTH}
-            <th />
-          {/if}
-        </tr>
-      </thead>
-      <tbody>
-        {#each rows as row, i}
-          {#if util.array_contains(is_editing, row.id)}
-            <EditRow
-              obra={row}
-              on:ObraEdited={handle_Edit_Element}
-              on:cancelEdit={handle_Edit_Element} />
-          {:else}
-            <ObraRow
-              obra={row}
-              {i}
-              on:editObra={handle_Edit_Element}
-              on:ObraDeleted={() => {
-                handle_Fetch;
-              }}
-              on:newSelect={handle_New_Select} />
-          {/if}
-        {/each}
-
-        {#if IS_AUTH}
-          <AddRow
-            on:obraAdded={() => {
-              handle_Fetch;
-            }} />
-        {/if}
-      </tbody>
-    </table>
-  </div>
+  <Table
+    {IS_AUTH}
+    {selected}
+    {rows}
+    {headers}
+    {is_editing}
+    on:newSelect={handle_Select}
+    on:newEdit={handle_Edit_Element}
+    on:newDownload={handle_Download_Element}
+    on:newAdd={() => {
+      handle_Fetch({});
+    }}
+    on:newDelete={() => {
+      handle_Fetch({});
+    }} />
 </div>

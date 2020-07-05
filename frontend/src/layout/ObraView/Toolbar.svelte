@@ -132,61 +132,70 @@
   hr {
     border-bottom: solid black 1px;
   }
+
+  .toolbar-container {
+    max-height: 20vh;
+  }
 </style>
 
-<div class="row search-bar">
-  <div class="column">
-    <u class="noselect">Buscar por</u>
+<div class="toolbar-container">
+
+  <div class="row search-bar">
+    <div class="column">
+      <u class="noselect">Buscar por</u>
+    </div>
+
+    <div class="column">
+      <select bind:value={level}>
+        {#each levels as level}
+          <option value={level}>{level.text}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="column">
+      <AutoComplete
+        items={composers}
+        bind:selectedItem={composer}
+        noResultsText="" />
+
+    </div>
+
+    <div class="column">
+      <button class="button" on:click={handleSubmit}>
+        <img src="images/search-icon.svg" alt="" />
+      </button>
+    </div>
   </div>
 
-  <div class="column">
-    <select bind:value={level}>
-      {#each levels as level}
-        <option value={level}>{level.text}</option>
-      {/each}
-    </select>
-  </div>
+  <!--- Table operations -->
+  {#if IS_AUTH}
+    <div class="row table-buttons button-bar ">
+      <div class="column">
+        <button
+          id={selected}
+          on:click={trigger_Download_event}
+          disabled={!(selected.length === 1) || !selected[0].file_exists}>
+          Descargar
+        </button>
+      </div>
+      <div class="column">
+        <button
+          id=""
+          disabled={selected.length === 0}
+          on:click={trigger_Edit_Event}>
+          Editar
+        </button>
+      </div>
 
-  <div class="column">
-    <AutoComplete
-      items={composers}
-      bind:selectedItem={composer}
-      noResultsText="" />
-
-  </div>
-
-  <div class="column">
-    <button class="button" on:click={handleSubmit}>
-      <img src="images/search-icon.svg" alt="" />
-    </button>
-  </div>
+      <div class="column">
+        <button
+          on:click={trigger_Delete_Event}
+          disabled={selected.length === 0}>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  {/if}
+  <hr />
 </div>
-
-<!--- Table operations -->
-{#if IS_AUTH}
-  <div class="row table-buttons button-bar ">
-    <div class="column">
-      <button
-        id={selected}
-        on:click={trigger_Download_event}
-        disabled={!(selected.length === 1) || !selected[0].file_exists}>
-        Descargar
-      </button>
-    </div>
-    <div class="column">
-      <button
-        id=""
-        disabled={selected.length === 0}
-        on:click={trigger_Edit_Event}>
-        Editar
-      </button>
-    </div>
-
-    <div class="column">
-      <button on:click={trigger_Delete_Event} disabled={selected.length === 0}>
-        Eliminar
-      </button>
-    </div>
-  </div>
-{/if}
-<hr />

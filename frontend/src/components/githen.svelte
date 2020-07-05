@@ -11,7 +11,6 @@
   });
 
   function addPost({detail: post}){
-    console.log("Detail: ", detail);
     posts = [post, ...posts]
   }
 </script>

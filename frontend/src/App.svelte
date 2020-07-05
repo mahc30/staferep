@@ -6,7 +6,7 @@
   import Navbar from "./layout/Navbar.svelte";
   import Home from "./components/Home.svelte";
   import Login from "./components/Login.svelte";
-  import Table from "./components/Table.svelte";
+  import ObraView from "./components/ObraView.svelte";
   // ========== Router stuff ========
   import { Router, Route } from "svelte-routing";
 </script>
@@ -19,5 +19,5 @@
   <Navbar />
   <Route path="/" component={Home} />
   <Route path="/login" component={Login} />
-  <Route path="/table" component={Table} />
+  <Route path="/table" component={ObraView} />
 </Router>

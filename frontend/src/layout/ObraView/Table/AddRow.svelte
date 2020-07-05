@@ -5,7 +5,7 @@
 
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
-  import { upload_file } from "../../../util/requests";
+  import { upload_file } from "../../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -56,11 +56,11 @@
   async function handle_upload_file(id) {
     toggle_load();
     await upload_file(files[0], newName, id);
+    filesExist = true;
     toggle_load();
   }
 
   async function handle_Add_Element(e) {
-    filesExist = true;
     let new_obra = {
       obra_name: newName,
       obra_composer: newComposer,
@@ -72,9 +72,6 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-      },
-      data: {
-        file: "And this is where i'd put my File ... IF I HAD ONE"
       },
       body: JSON.stringify(new_obra)
     })
@@ -173,7 +170,9 @@
     <td />
   </tr>
 {:else}
-  <div class="add-button-container">
-    <button on:click={toggle_add}>Nueva Obra</button>
-  </div>
+  <td>
+    <div class="add-button-container">
+      <button on:click={toggle_add}>Nueva Obra</button>
+    </div>
+  </td>
 {/if}

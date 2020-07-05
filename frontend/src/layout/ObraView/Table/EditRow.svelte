@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { upload_file } from "../../../util/requests";
+  import { upload_file } from "../../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
