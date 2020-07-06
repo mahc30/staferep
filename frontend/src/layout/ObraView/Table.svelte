@@ -37,14 +37,12 @@
     dispatch("newDownload", e.detail);
   }
 
-  function handle_Add_Element(e){
-    dispatch("newAdd", e.detail);
-  }
 </script>
 
 <style>
   .table-container {
     overflow-y: scroll;
+    border-right: 1px solid black;
   }
 
   th {
@@ -53,7 +51,7 @@
   }
 
   .table-container {
-    max-height: calc(80vh - 2px);
+    max-height: calc(70vh);
   }
 </style>
 
@@ -90,10 +88,7 @@
         {/if}
       {/each}
 
-      {#if IS_AUTH}
-        <AddRow
-          on:obraAdded={handle_Add_Element} />
-      {/if}
+      
     </tbody>
   </table>
 </div>

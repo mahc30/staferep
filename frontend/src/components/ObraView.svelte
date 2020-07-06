@@ -5,6 +5,7 @@
 
   import Toolbar from "../layout/ObraView/Toolbar.svelte";
   import Table from "../layout/ObraView/Table.svelte";
+  import Viewer from "../layout/ObraView/Viewer.svelte";
 
   let obras = {};
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
@@ -27,7 +28,7 @@
       ? (selected = [...selected, obra])
       : (selected = util.find_and_delete(selected, obra));
   }
-  
+
   function handle_Update_Table(list) {
     headers = list.headers || headers;
     rows = list.rows || rows;
@@ -89,16 +90,19 @@
 </script>
 
 <style>
-  .component-container {
+  .obraView-container {
     display: flex;
     flex-flow: column;
-    height: 90vh;
-    max-height: calc(90vh - 2px);
+    max-height: 90vh;
     overflow: hidden;
+  }
+
+  .column {
+    padding: 0 1rem !important;
   }
 </style>
 
-<div class="component-container">
+<div class="obraView-container">
   <Toolbar
     {IS_AUTH}
     {selected}
@@ -108,19 +112,31 @@
     on:obraDelete={handle_Delete_Element}
     on:obraDownload={handle_Download_Element} />
 
-  <Table
-    {IS_AUTH}
-    {selected}
-    {rows}
-    {headers}
-    {is_editing}
-    on:newSelect={handle_Select}
-    on:newEdit={handle_Edit_Element}
-    on:newDownload={handle_Download_Element}
-    on:newAdd={() => {
-      handle_Fetch({});
-    }}
-    on:newDelete={() => {
-      handle_Fetch({});
-    }} />
+  <div class="row">
+    <div class="column">
+      <Table
+        {IS_AUTH}
+        {selected}
+        {rows}
+        {headers}
+        {is_editing}
+        on:newSelect={handle_Select}
+        on:newEdit={handle_Edit_Element}
+        on:newDownload={handle_Download_Element}
+        on:newDelete={() => {
+          handle_Fetch({});
+        }} />
+    </div>
+
+    <!--TODO {#if is_editing.length > 1}-->
+    <div class="column">
+      <Viewer
+        {IS_AUTH}
+        {selected}
+        on:newAdd={() => {
+          handle_Fetch({});
+        }} />
+    </div>
+
+  </div>
 </div>

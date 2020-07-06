@@ -135,6 +135,7 @@
 
   .toolbar-container {
     max-height: 20vh;
+    padding: 2vh 0 2vh 0;
   }
 </style>
 
@@ -169,16 +170,17 @@
   </div>
 
   <!--- Table operations -->
-  {#if IS_AUTH}
-    <div class="row table-buttons button-bar ">
-      <div class="column">
-        <button
-          id={selected}
-          on:click={trigger_Download_event}
-          disabled={!(selected.length === 1) || !selected[0].file_exists}>
-          Descargar
-        </button>
-      </div>
+  <div class="row table-buttons button-bar ">
+    <div class="column">
+      <button
+        id={selected}
+        on:click={trigger_Download_event}
+        disabled={!(selected.length === 1) || !selected[0].file_exists}>
+        Descargar
+      </button>
+    </div>
+    
+    {#if IS_AUTH}
       <div class="column">
         <button
           id=""
@@ -195,7 +197,7 @@
           Eliminar
         </button>
       </div>
-    </div>
-  {/if}
-  <hr />
+    {/if}
+  </div>
 </div>
+<hr />
