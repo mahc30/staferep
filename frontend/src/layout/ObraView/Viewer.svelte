@@ -1,13 +1,13 @@
 <script>
-  import EditRow from "./Table/EditRow.svelte";
-  import AddRow from "./Table/AddRow.svelte";
+  import EditRow from "./Viewer/EditRow.svelte";
+  import AddRow from "./Viewer/AddRow.svelte";
+
   import { createEventDispatcher } from "svelte";
+  let dispatch = createEventDispatcher();
 
   export let selected;
-
-  let dispatch = createEventDispatcher();
   let obra_iterator = 0;
-  let min = 0;
+  let currently_selected = selected[obra_iterator];
 
   function handle_Add_Element(e) {
     dispatch("newAdd", e.detail);
@@ -22,20 +22,20 @@
     } else {
       if (obra_iterator > 0) obra_iterator--;
     }
+    currently_selected = selected[obra_iterator]
   }
 
   function handle_iterator() {
     //When deleting from list, the iterator should change to prevent out of index
-    //
-    //console.log("Current length", selected.length, "then", selected.length - 1);
+
+    //In case last item is deleted
     if (selected.length <= 1) {
       return;
     }
 
+    //Random item deleted
     if (obra_iterator >= selected.length - 1) obra_iterator--;
-    else obra_iterator++;
-
-    //console.log("Currently Selected:", selected[obra_iterator])
+    else if (obra_iterator != selected.length - 2) obra_iterator++;
   }
 
   function handle_Cancel(e) {
@@ -61,13 +61,15 @@
     height: 15%;
   }
 
+  .navigation {
+    height: 5%;
+  }
+
   .preview {
     display: flex;
     height: 80%;
-  }
-
-  .navigation {
-    height: 5%;
+    max-height: 80%;
+    overflow: scroll;
   }
 
   .row {
@@ -78,11 +80,6 @@
 
   .nav {
     align-items: unset !important; /* Because it goes out of div and overlaps with top content for no reason */
-  }
-
-  img {
-    max-width: 50%;
-    max-height: 50%;
   }
 
   button {
@@ -142,7 +139,12 @@
   </div>
 
   <div class="row preview">
-    <img src="images/red-logo.png" alt="" />
+    <button
+      on:click={(window.location = `/table/${selected[obra_iterator].id}`)}
+      disabled={selected.length === 0 || !selected[obra_iterator].file_exists}>
+      Ir a Vista Previa
+    </button>
+
   </div>
 
 </div>

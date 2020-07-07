@@ -107,6 +107,11 @@
   .pl-4 {
     padding-left: 4%;
   }
+
+  .file-input{
+    max-width: 10%;
+    overflow: hidden;
+  }
 </style>
 
 <tr>
@@ -125,7 +130,7 @@
       </select>
     </div>
   </td>
-  <td>
+  <td class="file-input">
     {#if !filesExist && !fileIsLoading}
       <input
         name="file"

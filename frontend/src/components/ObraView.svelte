@@ -9,6 +9,7 @@
 
   let obras = {};
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
+  let show_viewer = false;
   let selected = [];
   let composers = ["Compositor"];
   let rows = [];
@@ -19,6 +20,10 @@
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
     await handle_Fetch({}); //Function receives an event, passing an empty object does the trick
   });
+
+  function toggle_viewer(){
+    show_viewer = !show_viewer;
+  }
 
   function handle_Select(e) {
     let checked = e.detail.checked;
@@ -60,7 +65,7 @@
   async function handle_Delete_Element(e) {
     await delete_element(e.detail);
     selected = util.find_and_delete(selected, e.detail);
-    is_editing = util.find_and_delete(is_editing, e.detail);
+    show_viewer = util.find_and_delete(show_viewer, e.detail);
     handle_Fetch({});
   }
 
@@ -81,6 +86,7 @@
   .obraView-container {
     display: flex;
     flex-flow: column;
+    height: calc(90vh-2px);
     max-height: 90vh;
   }
 
@@ -95,12 +101,12 @@
     {selected}
     {composers}
     on:newSearch={handle_Fetch}
-    on:obraEdit={handle_Edit_Element}
+    on:obraEdit={toggle_viewer}
     on:obraDelete={handle_Delete_Element}
     on:obraDownload={handle_Download_Element} />
 
   <div class="row">
-    <div class="column">
+    <div class:column-33={show_viewer} class="column">
       <Table
         {IS_AUTH}
         {selected}
@@ -114,7 +120,7 @@
         }} />
     </div>
 
-    {#if IS_AUTH}
+    {#if IS_AUTH && show_viewer}
       <div class="column">
         <Viewer
           {selected}

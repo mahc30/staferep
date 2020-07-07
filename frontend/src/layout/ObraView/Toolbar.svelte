@@ -62,11 +62,7 @@
   }
 
   function trigger_Edit_Event() {
-    selected.forEach(obra => {
-      dispatch("obraEdit", { obra: obra, new_edit: true });
-    });
-
-    selected = [];
+    dispatch("obraEdit");
   }
 
   function trigger_Delete_Event() {
@@ -179,12 +175,11 @@
         Descargar
       </button>
     </div>
-    
+
     {#if IS_AUTH}
       <div class="column">
         <button
           id=""
-          disabled={selected.length === 0}
           on:click={trigger_Edit_Event}>
           Editar
         </button>

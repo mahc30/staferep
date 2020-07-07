@@ -3,9 +3,7 @@
   import { createEventDispatcher } from "svelte";
   import { delete_element, fetch_obra_list } from "../../../util/requests";
 
-  import EditRow from "./Table/EditRow.svelte";
   import ObraRow from "./Table/ObraRow.svelte";
-  import AddRow from "./Table/AddRow.svelte";
   let dispatch = createEventDispatcher();
 
   //Initialize with default values :)

@@ -1,4 +1,5 @@
 /.git
 /backend/util/secrets
 /backend/uploads
-
+/backend/node_modules
+/frontentd/node_modules
