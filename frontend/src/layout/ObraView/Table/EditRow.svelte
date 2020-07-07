@@ -12,8 +12,8 @@
   ];
 
   export let obra;
-  let newName = obra.name;
-  let newComposer = obra.composer;
+  let newName = obra.name || "";
+  let newComposer = obra.composer || "";
   let files = []; //svelte requires this var name
   let newLevel = levels.find(newLevel => newLevel.text === obra.level);
   let fileIsLoading = false;
@@ -54,7 +54,6 @@
 
       if (edit.ok) {
         dispatch("ObraEdited", {
-          new_edit: false,
           obra: new_obra,
           cancel: false
         });

@@ -9,11 +9,11 @@
 
   let obras = {};
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
-  let is_editing = [{ id: -1 }];
   let selected = [];
   let composers = ["Compositor"];
   let rows = [];
   let headers = [];
+  let checked = [];
 
   onMount(async () => {
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
@@ -35,20 +35,8 @@
   }
 
   async function handle_Edit_Element(e) {
-    //Cancel Event
-    if (e.detail.cancel) {
-      is_editing = util.find_and_delete(is_editing, e.detail.obra.id);
-      selected = util.find_and_delete(selected, e.detail.obra);
-    }
-    //Edit Obra Event
-    else if (e.detail.new_edit) is_editing = [...is_editing, e.detail.obra];
-    else {
-      //Obra Edited Event
-      is_editing = util.find_and_delete(is_editing, e.detail.obra.id);
-      selected = util.find_and_delete(selected, e.detail.obra);
-    }
-
-    if (is_editing.length <= 1) await handle_Fetch({});
+    selected = util.find_and_delete(selected, e.detail.obra.id);
+    if (selected.length <= 0) await handle_Fetch({});
   }
 
   async function handle_Fetch(e) {
@@ -94,7 +82,6 @@
     display: flex;
     flex-flow: column;
     max-height: 90vh;
-    overflow: hidden;
   }
 
   .column {
@@ -119,7 +106,6 @@
         {selected}
         {rows}
         {headers}
-        {is_editing}
         on:newSelect={handle_Select}
         on:newEdit={handle_Edit_Element}
         on:newDownload={handle_Download_Element}
@@ -128,15 +114,17 @@
         }} />
     </div>
 
-    <!--TODO {#if is_editing.length > 1}-->
-    <div class="column">
-      <Viewer
-        {IS_AUTH}
-        {selected}
-        on:newAdd={() => {
-          handle_Fetch({});
-        }} />
-    </div>
+    {#if IS_AUTH}
+      <div class="column">
+        <Viewer
+          {selected}
+          on:newAdd={() => {
+            handle_Fetch({});
+          }}
+          on:cancelEdit={handle_Edit_Element}
+          on:ObraEdited={handle_Edit_Element} />
+      </div>
+    {/if}
 
   </div>
 </div>
