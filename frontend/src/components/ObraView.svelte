@@ -5,12 +5,11 @@
 
   import Toolbar from "../layout/ObraView/Toolbar.svelte";
   import Table from "../layout/ObraView/Table.svelte";
-  import Viewer from "../layout/ObraView/Viewer.svelte";
 
   let obras = {};
   let IS_AUTH = false; //TODO temporal IS_AUTH var for testing
-  let show_viewer = false;
   let selected = [];
+  let is_editing = [];
   let composers = ["Compositor"];
   let rows = [];
   let headers = [];
@@ -20,10 +19,6 @@
     IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
     await handle_Fetch({}); //Function receives an event, passing an empty object does the trick
   });
-
-  function toggle_viewer(){
-    show_viewer = !show_viewer;
-  }
 
   function handle_Select(e) {
     let checked = e.detail.checked;
@@ -101,12 +96,11 @@
     {selected}
     {composers}
     on:newSearch={handle_Fetch}
-    on:obraEdit={toggle_viewer}
     on:obraDelete={handle_Delete_Element}
     on:obraDownload={handle_Download_Element} />
 
   <div class="row">
-    <div class:column-33={show_viewer} class="column">
+    <div class="column">
       <Table
         {IS_AUTH}
         {selected}
@@ -119,18 +113,5 @@
           handle_Fetch({});
         }} />
     </div>
-
-    {#if IS_AUTH && show_viewer}
-      <div class="column">
-        <Viewer
-          {selected}
-          on:newAdd={() => {
-            handle_Fetch({});
-          }}
-          on:cancelEdit={handle_Edit_Element}
-          on:ObraEdited={handle_Edit_Element} />
-      </div>
-    {/if}
-
   </div>
 </div>

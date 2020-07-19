@@ -5,7 +5,10 @@ exports.find_and_delete = function(array, id) {
 }
 
 exports.array_contains = function(array, id) {
+    console.log("Contains:")
+    console.log("Len:", array.length, "Arr:", array);
     let filter = array.filter(obj => { return obj.id === id });
+    console.log("Len:", array.length, "Arr:", filter);
     return filter.length > 0
 }
 

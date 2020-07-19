@@ -169,9 +169,8 @@
   <div class="row table-buttons button-bar ">
     <div class="column">
       <button
-        id={selected}
         on:click={trigger_Download_event}
-        disabled={!(selected.length === 1) || !selected[0].file_exists}>
+        disabled={selected.length != 1 || !selected[0].file_exists}>
         Descargar
       </button>
     </div>
