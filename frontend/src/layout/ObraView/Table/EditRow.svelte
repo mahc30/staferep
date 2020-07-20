@@ -12,11 +12,10 @@
   ];
 
   export let obra;
-  let newName = obra.name || "";
-  let newComposer = obra.composer || "";
+  let newName = obra.name;
+  let newComposer = obra.composer;
   let files = []; //svelte requires this var name
   let newLevel = levels.find(newLevel => newLevel.text === obra.level);
-  let fileIsLoading = false;
   let filesExist = obra.file_exists || false;
   let isValidInput = false;
 
@@ -26,10 +25,6 @@
       (newComposer && newComposer != obra.composer) ||
       (newLevel.id != -1 && newLevel.text != obra.level) ||
       files[0];
-  }
-
-  function toggle_load() {
-    fileIsLoading = !fileIsLoading;
   }
 
   async function handle_edit_element(e) {
@@ -54,6 +49,7 @@
 
       if (edit.ok) {
         dispatch("ObraEdited", {
+          new_edit: false,
           obra: new_obra,
           cancel: false
         });
@@ -104,41 +100,47 @@
     color: white;
   }
 
-  .pl-4 {
-    padding-left: 4%;
+  .pl-4{
+    padding-left: 2%;
   }
 
-  .file-input{
-    max-width: 10%;
-    overflow: hidden;
-  }
 </style>
 
 <tr>
-  <td class="pl-4">
-    <input type="text" bind:value={newName} on:change={validate_input} />
-  </td>
   <td>
-    <input type="text" bind:value={newComposer} on:change={validate_input} />
-  </td>
-  <td>
-    <div class="column">
-      <select bind:value={newLevel} on:change={validate_input}>
-        {#each levels as newLevel}
-          <option value={newLevel}>{newLevel.text}</option>
-        {/each}
-      </select>
+    <div class="row pl-4">
+      <div class="column">
+        <input type="text" bind:value={newName} on:change={validate_input} />
+      </div>
+
+      <div class="column">
+        <input
+          type="text"
+          bind:value={newComposer}
+          on:change={validate_input} />
+      </div>
+
+      <div class="column">
+        <select bind:value={newLevel} on:change={validate_input}>
+          {#each levels as newLevel}
+            <option value={newLevel}>{newLevel.text}</option>
+          {/each}
+        </select>
+      </div>
     </div>
   </td>
-  <td class="file-input">
-    {#if !filesExist && !fileIsLoading}
-      <input
-        name="file"
-        type="file"
-        accept=".pdf"
-        bind:files
-        on:change={validate_input} />
+  <td>
+    {#if !filesExist}
+      <p>La obra ya existe, agregar una nueva sobreescribirá a la anterior</p>
+      <!-- //TODO This should be a button, like, click ok and then show the input -->
     {/if}
+    <input
+      name="file"
+      type="file"
+      accept=".pdf"
+      bind:files
+      on:change={validate_input} />
+
   </td>
   <td>
 
@@ -149,4 +151,5 @@
     {/if}
 
   </td>
+  
 </tr>

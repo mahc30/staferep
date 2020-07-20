@@ -5,15 +5,12 @@ exports.find_and_delete = function(array, id) {
 }
 
 exports.array_contains = function(array, id) {
-    console.log("Contains:")
-    console.log("Len:", array.length, "Arr:", array);
     let filter = array.filter(obj => { return obj.id === id });
-    console.log("Len:", array.length, "Arr:", filter);
     return filter.length > 0
 }
 
 exports.format_obras_data = function(req) {
-    let headers = [{ title: "Obra" }]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
+    let headers = [{ title: "Obra" }, { title: "Compositor" }]; //Burn it, cause it´s easier than doing foreachs and formatting a formatting function
     let rows = [];
     let data = {};
 
@@ -40,13 +37,12 @@ exports.format_file_name = function(file_name, new_name) {
 }
 
 exports.filter_composer = function(array) {
-    let composers = []
     let new_array = [];
-
     array.forEach(element => {
         composers = [...composers, element.composer];
     });
 
     new_array = ["Compositor", ...new Set(composers)]; //Apparently ...new SET returns a new array without duplicates :o
+    console.log("Filter", new_array);
     return new_array
 }

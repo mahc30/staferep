@@ -1,11 +1,9 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import util from "../../../../util/util";
   let dispatch = createEventDispatcher();
 
   export let obra;
   export let i;
-  export let selected;
 
   function trigger_edit_event(e) {
     dispatch("editObra", { id: e.target.id });
@@ -38,12 +36,12 @@
 
 <tr class:highlight={i % 2 === 0} class="table_body_row">
   <td>{obra.name}</td>
+  <td>{obra.composer}</td>
   <td>
     <input
       id={obra.id}
       type="checkbox"
       name="select_row"
-      checked={util.array_contains(selected, obra.id)}
       on:change={trigger_select_event} />
   </td>
 </tr>

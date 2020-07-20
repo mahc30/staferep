@@ -62,7 +62,11 @@
   }
 
   function trigger_Edit_Event() {
-    dispatch("obraEdit");
+    selected.forEach(obra => {
+      dispatch("obraEdit", { obra: obra, new_edit: true });
+    });
+
+    selected = [];
   }
 
   function trigger_Delete_Event() {
@@ -131,7 +135,6 @@
 
   .toolbar-container {
     max-height: 20vh;
-    padding: 2vh 0 2vh 0;
   }
 </style>
 
@@ -166,19 +169,30 @@
   </div>
 
   <!--- Table operations -->
+
   <div class="row table-buttons button-bar ">
-    <div class="column">
+  <div class="column">
       <button
-        on:click={trigger_Download_event}
-        disabled={selected.length != 1 || !selected[0].file_exists}>
-        Descargar
+        id={selected}
+        on:click={window.location=`/table/${selected[0].id}`}
+        disabled={!(selected.length === 1) || !selected[0].file_exists}>
+        Vista Previa
       </button>
     </div>
 
+    <div class="column">
+      <button
+        id={selected}
+        on:click={trigger_Download_event}
+        disabled={!(selected.length === 1) || !selected[0].file_exists}>
+        Descargar
+      </button>
+    </div>
     {#if IS_AUTH}
       <div class="column">
         <button
           id=""
+          disabled={selected.length === 0}
           on:click={trigger_Edit_Event}>
           Editar
         </button>
@@ -193,5 +207,5 @@
       </div>
     {/if}
   </div>
+  <hr />
 </div>
-<hr />

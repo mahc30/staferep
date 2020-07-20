@@ -3,11 +3,12 @@
   import "../node_modules/milligram/dist/milligram.min.css";
 
   // ========= Components =============
-  import Navbar from "./components/Navbar.svelte";
+  import Navbar from "./layout/Navbar.svelte";
   import Home from "./components/Home.svelte";
   import Login from "./components/Login.svelte";
   import ObraView from "./components/ObraView.svelte";
   import PdfView from "./components/PdfView.svelte";
+  
   // ========== Router stuff ========
   import { Router, Route } from "svelte-routing";
 </script>
