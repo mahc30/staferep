@@ -67,7 +67,8 @@
   }
 
   function handle_cancel(e) {
-    dispatch("cancelEdit", { obra: obra, cancel: true });
+    dispatch("cancelEdit", { obra: {obra_id: obra.id}, //I'm sorry
+    cancel: true });
   }
 </script>
 

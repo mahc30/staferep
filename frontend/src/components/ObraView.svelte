@@ -20,7 +20,6 @@
   });
 
   function handle_Select(e) {
-    console.log(e.detail);
     let checked = e.detail.checked;
     let obra = e.detail.obra;
 
