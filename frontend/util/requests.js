@@ -57,7 +57,10 @@ export async function fetch_obra_list(filters) {
         try {
             const response = await fetch(url, options);
             const raw_data = await response.json();
-            let parsed_data = util.format_obras_data(raw_data);
+            let parsed_data = {
+                obras: util.format_obras_data(raw_data),
+                composers: util.filter_composer(raw_data)
+            };
             resolve(parsed_data)
         } catch {
             reject()

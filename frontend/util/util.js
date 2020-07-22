@@ -38,11 +38,11 @@ exports.format_file_name = function(file_name, new_name) {
 
 exports.filter_composer = function(array) {
     let new_array = [];
+    let composers = [];
     array.forEach(element => {
         composers = [...composers, element.composer];
     });
 
     new_array = ["Compositor", ...new Set(composers)]; //Apparently ...new SET returns a new array without duplicates :o
-    console.log("Filter", new_array);
     return new_array
 }

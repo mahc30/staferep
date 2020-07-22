@@ -33,8 +33,9 @@
   }
   
   function handle_Update_Table(list) {
-    headers = list.headers || headers;
-    rows = list.rows || rows;
+    headers = list.obras.headers || headers;
+    rows = list.obras.rows || rows;
+    composers = list.composers;
   }
 
   async function handle_Edit_Element(e) {
