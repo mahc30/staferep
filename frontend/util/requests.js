@@ -9,7 +9,7 @@ export async function upload_file(file, file_name, obra_id) {
     data.append("file", newFile);
 
     try {
-        await fetch(`http://localhost:3000/obras/upload/${obra_id}`, {
+        await fetch(`http://${process.env.API}/obras/upload/${obra_id}`, {
             method: "POST",
             body: data
         });
@@ -22,7 +22,7 @@ export async function delete_element(id) {
 
     return new Promise(async(resolve, rejected) => {
         try {
-            let delete_req = await fetch("http://localhost:3000/obras/delete", {
+            let delete_req = await fetch(`http://${process.env.API}/obras/delete`, {
                 method: "DELETE",
                 headers: {
                     "Content-type": "application/json"
@@ -41,7 +41,7 @@ export async function delete_element(id) {
 }
 
 export async function fetch_obra_list(filters) {
-    let url = "http://localhost:3000/obras/findall";
+    let url = `http://${process.env.API}/obras/findall`;
     let options = {
         headers: { "Content-type": "application/json" },
         method: "GET"
@@ -56,14 +56,52 @@ export async function fetch_obra_list(filters) {
     return new Promise(async(resolve, reject) => {
         try {
             const response = await fetch(url, options);
-            const raw_data = await response.json();
+            const obras_data = await response.json();
             let parsed_data = {
-                obras: util.format_obras_data(raw_data),
-                composers: util.filter_composer(raw_data)
+                obras: util.format_obras_data(obras_data),
+                composers: util.filter_composer(obras_data)
             };
             resolve(parsed_data)
         } catch {
             reject()
         }
     });
+}
+
+export async function login(pw) {
+
+    let auth = {
+        password: pw
+    };
+
+    //TODO tokenize this
+    let url = `http://${process.env.API}/auth/login`;
+    let options = {
+        headers: { "Content-type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(auth)
+    };
+    return new Promise(async(resolve, reject) => {
+        try {
+            if (pw.trim() === "") reject({ error: "No Credentials" });
+
+            const res = await fetch(url, options);
+
+            if (res.ok) {
+                const auth_data = await res.json();
+
+                resolve({
+                    auth_data: {
+                        level: auth_data.level,
+                        token: auth_data.token
+                    }
+                });
+            } else reject({ error: "Auth_Failed" })
+
+        } catch (error) {
+            reject({ error: error });
+        }
+
+    })
+
 }

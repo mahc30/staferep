@@ -1,32 +1,21 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
+  import { login } from "../../util/requests";
   import { navigate } from "svelte-routing";
   let pw = "";
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (pw.trim() === "") return;
-
-    //TODO tokenize this
-    let auth = {
-      password: pw
-    };
-
-    const res = await fetch(`http://localhost:3000/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(auth)
-    });
-
-    if (res.ok) {
-      dispatch("isAuth");
-      let auth_info = await res.json();
-      localStorage.setItem("auth", auth_info.level);
-      navigate("/", { replace: true });
-    }
+    login(pw)
+      .then(res => {
+        dispatch("isAuth");
+        localStorage.setItem("auth", res.auth_data.level);
+        navigate("/", { replace: true });
+      })
+      .catch(err => {
+        //console.log(err)
+      });
   }
 </script>
 
