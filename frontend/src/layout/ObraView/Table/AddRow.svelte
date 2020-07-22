@@ -30,12 +30,11 @@
   }
 
   function reset_component() {
-    isAdding = false;
+    toggle_add();
     newName = "";
     newComposer = "";
     files = [];
     new_level = levels[0];
-    isAdding = false;
     fileIsLoading = false;
     filesExist = false;
     isValidInput = false;
@@ -121,31 +120,35 @@
   }
 </style>
 
-{#if isAdding}
-  <tr>
+<tr>
+  {#if isAdding}
     <td class="pl-4">
-      <input
-        type="text"
-        placeholder="nombre"
-        bind:value={newName}
-        on:change={validate_input} />
-    </td>
-    <td>
-      <input
-        type="text"
-        placeholder="compositor"
-        bind:value={newComposer}
-        on:change={validate_input} />
-    </td>
-    <td>
-      <div class="column">
-        <select bind:value={new_level} on:change={validate_input}>
-          {#each levels as new_level}
-            <option value={new_level}>{new_level.text}</option>
-          {/each}
-        </select>
+      <div class="row pl-4">
+        <div class="column">
+          <input
+            type="text"
+            placeholder="nombre"
+            bind:value={newName}
+            on:change={validate_input} />
+        </div>
+        <div class="column">
+          <input
+            type="text"
+            placeholder="compositor"
+            bind:value={newComposer}
+            on:change={validate_input} />
+        </div>
+
+        <div class="column">
+          <select bind:value={new_level} on:change={validate_input}>
+            {#each levels as new_level}
+              <option value={new_level}>{new_level.text}</option>
+            {/each}
+          </select>
+        </div>
       </div>
     </td>
+
     <td>
       {#if !filesExist && !fileIsLoading}
         <input
@@ -162,17 +165,24 @@
         <p>Error Cargando Archivo</p>
       {/if}
     </td>
+
     <td>
-      <button on:click={handle_Add_Element} disabled={!isValidInput}>
+    {#if isValidInput}
+       <button on:click={handle_Add_Element}>
         Agregar
       </button>
+    {:else}
+       <button on:click={reset_component}>
+        Cancelar
+      </button>
+    {/if}
+      
     </td>
-    <td />
-  </tr>
-{:else}
-  <td>
-    <div class="add-button-container">
-      <button on:click={toggle_add}>Nueva Obra</button>
-    </div>
-  </td>
-{/if}
+  {:else}
+    <td>
+      <div class="add-button-container">
+        <button on:click={toggle_add}>Nueva Obra</button>
+      </div>
+    </td>
+  {/if}
+</tr>
