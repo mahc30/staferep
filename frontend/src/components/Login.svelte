@@ -11,6 +11,7 @@
       .then(res => {
         dispatch("isAuth");
         localStorage.setItem("auth", res.auth_data.level);
+        localStorage.setItem("token", res.auth_data.token);
         navigate("/", { replace: true });
       })
       .catch(err => {

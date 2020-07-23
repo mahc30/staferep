@@ -15,7 +15,7 @@
   let headers = [];
 
   onMount(async () => {
-    IS_AUTH = localStorage.getItem("auth") === "1"; //This value only exists if server authenticates (or someone just writes it... token handles security tho)
+    IS_AUTH = localStorage.getItem("auth") === "1" && localStorage.getItem("token"); //This value only exists if server authenticates (or someone just writes it... token handles security tho)
     await handle_Fetch({}); //Function receives an event, passing an empty object does the trick
   });
 

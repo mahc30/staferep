@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { upload_file } from "../../../../util/requests";
+  import { upload_file, update_obra } from "../../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -29,7 +29,6 @@
 
   async function handle_edit_element(e) {
     if (files[0]) await handle_upload_file();
-
     let new_obra = {
       obra_id: obra.id,
       name: newName || obra.name,
@@ -38,24 +37,20 @@
       file_exists: filesExist
     };
 
-    try {
-      let edit = await fetch("http://localhost:3000/obras/update", {
-        method: "PATCH",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(new_obra)
-      });
-
-      if (edit.ok) {
-        dispatch("ObraEdited", {
-          new_edit: false,
-          obra: new_obra,
-          cancel: false
-        });
+    if (new_obra) {
+      try {
+        let edit = await update_obra(new_obra);
+        if (edit.ok) {
+          dispatch("ObraEdited", {
+            new_edit: false,
+            obra: new_obra,
+            cancel: false
+          });
+        } else alert("No se pudo editar la obra");
+      } catch (error) {
+        console.log(error);
+        alert("Error Editando Obra");
       }
-    } catch (error) {
-      console.log("Error Editando Obra", error);
     }
   }
 
@@ -65,8 +60,10 @@
   }
 
   function handle_cancel(e) {
-    dispatch("cancelEdit", { obra: {obra_id: obra.id}, //I'm sorry
-    cancel: true });
+    dispatch("cancelEdit", {
+      obra: { obra_id: obra.id }, //I'm sorry
+      cancel: true
+    });
   }
 </script>
 
@@ -99,10 +96,9 @@
     color: white;
   }
 
-  .pl-4{
+  .pl-4 {
     padding-left: 2%;
   }
-
 </style>
 
 <tr>
@@ -150,5 +146,5 @@
     {/if}
 
   </td>
-  
+
 </tr>
