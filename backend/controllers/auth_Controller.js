@@ -1,11 +1,13 @@
 const logger = require('../util/logger');
 const Auth = require('../db/models/Auth');
+const jwt = require('../jwt/jwt');
+
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
 /* POST register */
-exports.register = async function (req, res) {
+exports.register = async function(req, res) {
 
     let encrypted_pw = encrypt(req.body.password);
     let auth = new Auth({ password: encrypted_pw });
@@ -14,32 +16,28 @@ exports.register = async function (req, res) {
         const obra_list = await auth.save();
         logger.new_Log(req.method, req.baseUrl, true)
         res.status(200).send(obra_list);
-    }
-    catch
-    {
+    } catch {
         await logger.new_Log(req.method, req.baseUrl, false);
         res.status(500).send("F");
     }
 };
 
-
 /* POST login */
-exports.login = async function (req, res) {
+exports.login = async function(req, res) {
     let encrypted_pw = encrypt(req.body.password);
 
     try {
         const result = await Auth.findOne({ password: encrypted_pw });
-        logger.new_Log(req.method, req.baseUrl, true);
+        let token = await jwt.sign_token({ "user": "generic user" }) //TODO users
         let auth_info = {
             level: "1",
-            token: ""
+            token: token
         }
+        logger.new_Log(req.method, req.baseUrl, true);
 
         if (result) res.status(202).send(auth_info);
         else res.sendStatus(401);
-    }
-    catch
-    {
+    } catch {
         logger.new_Log(req.method, req.baseUrl, false);
         res.status(500).send("F");
     }

@@ -64,22 +64,9 @@ exports.download = async function(req, res) {
 
     res.writeHead(200, {
         'Content-Disposition': `attachment; filename="${file_name}"`,
-        'Content-Type': 'application/pdf',
+        'Content-Type': file_type,
     });
     res.end(download);
-    /*
-    try {
-        let obra = await Obra.findById(req.params.obra_id);
-        if (obra && obra.file_exists) {
-            res.status(200).download(download_path);
-        }
-        else res.sendStatus(204);
-    }
-    catch (err) {
-        console.log("Download Error: ", err);
-        res.sendStatus(500);
-    }
-    */
 };
 
 /* Post Obra */
@@ -101,7 +88,7 @@ exports.new_obra = async function(req, res) {
 
     } catch (err) {
         logger.new_Log(req.method, req.baseUrl, false);
-        console.log(err);
+        console.log(err.message);
         res.status(500).send(err);
     }
 };
