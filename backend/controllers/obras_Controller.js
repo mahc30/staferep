@@ -10,10 +10,12 @@ const fs = require('fs');
     INDEX:
 Get Obras List
 Get Obras by ID
+Get Download Obra by ID
 Post new Obra
 Delete Obra by ID
-
-
+Edit Obra by ID
+Get Obras List by Params
+Post new Obra File
 */
 
 /* GET obras listing. */
@@ -80,7 +82,6 @@ exports.download = async function(req, res) {
     */
 };
 
-// TODO Handle Get by Filters
 /* Post Obra */
 exports.new_obra = async function(req, res) {
     //TODO handle possible pdf submit
@@ -155,21 +156,25 @@ exports.upload = async function(req, res) {
     As multer doesn't have much customization and stuff 
     and will save everything locally, it's necesary to add
     an external data storage so files can persist between containers */
+
     if (!req.file) { //This means multer had an error
-        res.status(500);
+        res.sendStatus(500);
         return;
     }
+
     const file_path = req.file.path;
     const file_name = req.file.filename;
     const file = fs.readFileSync(file_path);
     const obra_id = req.params.obra_id;
-    const file_model = new File({
+    const doc = {
         name: file_name,
         parent_id: ObjectId(obra_id),
         data: file,
         content_type: "application/pdf",
-    })
+    }
 
-    file_model.save()
-    res.send(200);
+    File.update({ parent_id: ObjectId(obra_id) },
+        doc, { upsert: true },
+        () => { res.sendStatus(200) }
+    );
 }

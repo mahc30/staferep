@@ -60,10 +60,8 @@
   }
 
   async function handle_upload_file(e) {
-    toggle_load();
     upload_file(files[0], newName, obra.id);
     filesExist = true;
-    toggle_load();
   }
 
   function handle_cancel(e) {
@@ -131,7 +129,7 @@
     </div>
   </td>
   <td>
-    {#if !filesExist}
+    {#if filesExist}
       <p>La obra ya existe, agregar una nueva sobreescribirá a la anterior</p>
       <!-- //TODO This should be a button, like, click ok and then show the input -->
     {/if}
