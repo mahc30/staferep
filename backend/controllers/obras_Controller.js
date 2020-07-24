@@ -143,7 +143,6 @@ exports.upload = async function(req, res) {
     As multer doesn't have much customization and stuff 
     and will save everything locally, it's necesary to add
     an external data storage so files can persist between containers */
-
     if (!req.file) { //This means multer had an error
         res.sendStatus(500);
         return;
@@ -160,7 +159,7 @@ exports.upload = async function(req, res) {
         content_type: "application/pdf",
     }
 
-    File.update({ parent_id: ObjectId(obra_id) },
+    await File.update({ parent_id: ObjectId(obra_id) },
         doc, { upsert: true },
         () => { res.sendStatus(200) }
     );

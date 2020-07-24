@@ -2,24 +2,31 @@ import util from "./util";
 
 export async function upload_file(file, file_name, obra_id) {
     let data = new FormData(); //Use FormData() for multipart/form-data
+    //Renaming the file in the front is necessary because Multer limitations for handling the files
     let formatted_file_name = util.format_file_name(file.name, file_name);
 
-    //Renaming the file in the front is necessary because Multer limitations for handling the files
     const newFile = new File([file], formatted_file_name, { type: data.type });
     data.append("file", newFile);
 
-    try {
-        await fetch(`http://${process.env.API}/obras/upload/${obra_id}`, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json",
-                "access-token": localStorage.getItem("token")
-            },
-            body: data
-        });
-    } catch (err) {
-        console.log(err);
-    }
+    return new Promise(async(resolve, reject) => {
+        try {
+            let upload_req = await fetch(`http://${process.env.API}/obras/upload/${obra_id}`, {
+                method: "POST",
+                headers: {
+                    //'Content-Type': 'multipart/form-data', TODO idk why specifying this header breaks it but ok, it works in Insomnia tho
+                    "access-token": localStorage.getItem("token")
+                },
+                body: data
+            });
+
+            if (upload_req.ok) resolve(upload_req);
+            else reject("Couldn't upload file");
+
+        } catch (err) {
+            reject(err);
+        }
+    })
+
 }
 
 export async function delete_element(id) {
@@ -111,17 +118,37 @@ export async function login(pw) {
 
 }
 
-export async function update_obra(new_obra) {
-    console.log(localStorage.getItem("token"));
+export async function update_obra(obra) {
     return new Promise(async(resolve, reject) => {
         try {
-            let edit = await fetch(`http://${process.env.API}/obras/update`, {
+            let add_req = await fetch(`http://${process.env.API}/obras/update`, {
                 method: "PATCH",
                 headers: {
                     "Content-type": "application/json",
                     "access-token": localStorage.getItem("token")
                 },
-                body: JSON.stringify(new_obra)
+                body: JSON.stringify(obra)
+            });
+
+            if (add_req.ok) {
+                resolve(add_req);
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export async function new_obra(obra) {
+    return new Promise(async(resolve, reject) => {
+        try {
+            let edit = await fetch(`http://${process.env.API}/obras/add`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                    "access-token": localStorage.getItem("token")
+                },
+                body: JSON.stringify(obra)
             });
 
             if (edit.ok) {

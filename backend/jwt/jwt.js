@@ -56,7 +56,7 @@ async function verify_token(req, res, next) {
             }
         });
     } catch (error) {
-        res.status(300).send({ error: 'Error verifying Token' })
+        res.status(500).send({ error: 'Error verifying Token' })
     }
 
 }

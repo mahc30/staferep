@@ -5,7 +5,7 @@
 
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
-  import { upload_file } from "../../../../util/requests";
+  import { upload_file, new_obra } from "../../../../util/requests";
 
   let dispatch = createEventDispatcher();
   let levels = [
@@ -55,33 +55,33 @@
   async function handle_upload_file(id) {
     toggle_load();
     await upload_file(files[0], newName, id);
-    filesExist = true;
     toggle_load();
   }
 
   async function handle_Add_Element(e) {
-    let new_obra = {
+    if (!isValidInput) {
+      alert("Obra no válida");
+      return;
+    }
+
+    let obra = {
       obra_name: newName,
       obra_composer: newComposer,
       obra_level: new_level.text,
       file_exists: filesExist
     };
 
-    fetch("http://localhost:3000/obras/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(new_obra)
-    })
-      .then(res => res.json())
-      .then(saved_obra => {
-        if (filesExist) handle_upload_file(saved_obra._id);
+    new_obra(obra)
+      .then(async res => await res.json())
+      .then(async saved_obra => {
+        if (filesExist) await handle_upload_file(saved_obra._id);
         dispatch("obraAdded", {});
-        reset_component();
       })
       .catch(err => {
-        console.log(err);
+        alert(err);
+      })
+      .finally(() => {
+        reset_component();
       });
   }
 </script>
@@ -167,16 +167,12 @@
     </td>
 
     <td>
-    {#if isValidInput}
-       <button on:click={handle_Add_Element}>
-        Agregar
-      </button>
-    {:else}
-       <button on:click={reset_component}>
-        Cancelar
-      </button>
-    {/if}
-      
+      {#if isValidInput}
+        <button on:click={handle_Add_Element}>Agregar</button>
+      {:else}
+        <button on:click={reset_component}>Cancelar</button>
+      {/if}
+
     </td>
   {:else}
     <td>

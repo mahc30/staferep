@@ -36,7 +36,7 @@ router.post('/add', jwt.verify_token, obra_controller.new_obra);
 router.post('/findFilter', obra_controller.find_all_filtered);
 
 /* Post find obras by Filters */
-router.post('/upload/:obra_id', jwt.verify_token, upload.single('file'), obra_controller.upload);
+router.post('/upload/:obra_id', [jwt.verify_token, upload.single('file')], obra_controller.upload);
 
 /* Delete Obra by id */
 router.delete('/delete', jwt.verify_token, obra_controller.delete_obra);
