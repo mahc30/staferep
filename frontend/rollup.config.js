@@ -24,8 +24,8 @@ export default {
             // As it will replace ALL calls to 'process' and cause errors in modules
 
             'process.env': JSON.stringify({
-                API: "localhost:3000",
-                //API: "34.70.76.59:3000",
+                //API: "localhost:3000",
+                API: "34.70.76.59:3000",
             }),
         }),
         css({ output: "public/build/extra.css" }),
