@@ -46,18 +46,19 @@ export async function delete_element(id) {
 }
 
 export async function fetch_obra_list(filters) {
+    //This is the usual most used request so it's default
     let url = `http://${process.env.API}/obras/findall`;
     let options = {
         headers: { "Content-type": "application/json" },
         method: "GET"
     };
 
+    //If there are filters, send FindFilter request instead
     if (!(Object.keys(filters).length === 0 && filters.constructor === Object)) {
         options.method = "POST";
         options.body = JSON.stringify(filters);
-        url = "http://localhost:3000/obras/findFilter"; //And the API is different
+        url = `http://${process.env.API}/obras/findFilter`; //And the API is different
     }
-
     return new Promise(async(resolve, reject) => {
         try {
             const response = await fetch(url, options);

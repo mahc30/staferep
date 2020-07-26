@@ -29,11 +29,11 @@ router.get('/findid/:obra_id', obra_controller.find_id);
 /* post downloadObra. */
 router.get('/download/:obra_id', obra_controller.download);
 
-/* Post Create new Obra */
-router.post('/add', jwt.verify_token, obra_controller.new_obra);
-
 /* Post find obras by Filters */
 router.post('/findFilter', obra_controller.find_all_filtered);
+
+/* Post Create new Obra */
+router.post('/add', jwt.verify_token, obra_controller.new_obra);
 
 /* Post find obras by Filters */
 router.post('/upload/:obra_id', jwt.verify_token, upload.single('file'), obra_controller.upload);

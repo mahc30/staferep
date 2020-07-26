@@ -127,6 +127,7 @@ exports.patch_obra = async function(req, res) {
 /* POST get by filters */
 exports.find_all_filtered = async function(req, res) {
     let filters = req.body;
+
     try {
         const obra_list = await Obra.find(filters);
         await logger.new_Log(req.method, req.baseUrl, true);

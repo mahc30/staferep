@@ -38,25 +38,28 @@
   export let composers = ["Compositor"];
   let composer;
 
-  function handleSubmit() {
+  // Handle Name
+  let name = "";
+
+  async function handleSubmit() {
     //Parse Input
     let filters = {};
     let is_level = level.id != -1;
-    let is_composer = composer != "Compositor" || false;
+    let is_composer = composer != "Compositor";
+    let is_name = name != "";
 
     if (is_level) filters.level = level.text;
     if (is_composer) filters.composer = composer;
-
-    dispatch("newSearch", filters);
+    if (is_name) {
+      filters.name = {
+        '$regex': name,
+        '$options': "i"
+      };
+    }
+    await dispatch("newSearch", filters);
+    reset_component();
   }
 
-  /*
-    ///////////////////////////////////////////////////////////////
-
-    Then everything related to the LogicHandling™ of CRUD operations
-
-    ///////////////////////////////////////////////////////////////    
-  */
   function trigger_Download_event(e) {
     dispatch("obraDownload", { obra: selected[0] });
   }
@@ -75,6 +78,12 @@
     });
 
     selected = [];
+  }
+
+  function reset_component() {
+    name = "";
+    composer = "Compositor";
+    level = levels[0];
   }
 </script>
 
@@ -161,6 +170,10 @@
     </div>
 
     <div class="column">
+      <input type="text" bind:value={name} placeholder="Nombre de la Obra" />
+    </div>
+
+    <div class="column">
       <select bind:value={level}>
         {#each levels as level}
           <option value={level}>{level.text}</option>
@@ -232,7 +245,7 @@
         <line x1="16" y1="12" x2="12" y2="16" />
       </svg>
     </div>
-    
+
     {#if IS_AUTH}
       <!-- Edit Button -->
       <div class="column">
